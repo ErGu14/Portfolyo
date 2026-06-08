@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Frontend/PortfolioFrontend/wwwroot/images/foto.jpg" alt="Eray Gülüçmen" width="150" height="150" style="border-radius: 50%; object-fit: cover;" />
+  <img src="Backend/PortfolioBackend/wwwroot/images/foto.jpg" alt="Eray Gülüçmen" width="150" height="150" style="border-radius: 50%; object-fit: cover;" />
 
   # Eray Gülüçmen - Modern Full-Stack Portfolio
 
