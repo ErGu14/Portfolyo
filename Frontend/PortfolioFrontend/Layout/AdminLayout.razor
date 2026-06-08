@@ -5,18 +5,37 @@
         <Authorized>
             <PageTitle>Eray Gülüçmen - Admin</PageTitle>
 
+            <!-- Mobile Top Navbar -->
+            <div class="d-md-none w-100 py-3 px-4 d-flex justify-content-between align-items-center" style="background-color: #020c1b; position: sticky; top: 0; z-index: 1010; border-bottom: 1px solid rgba(100, 255, 218, 0.2);">
+                <h5 class="text-white mb-0 fw-bold"><i class="fas fa-user-shield text-accent me-2"></i>Admin</h5>
+                <button class="btn text-accent border-0 p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+                    <i class="fas fa-bars fs-2"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Offcanvas Sidebar -->
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel" style="background-color: #0a192f; width: 280px; border-right: 1px solid rgba(100, 255, 218, 0.2);">
+                <div class="offcanvas-header border-bottom border-secondary border-opacity-25 py-3 d-flex justify-content-end">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body p-0">
+                    <AdminSidebar />
+                </div>
+            </div>
+
+            <!-- Desktop Sidebar -->
             <div class="d-none d-md-block h-100 position-fixed" style="width: 250px; z-index: 1000;">
                 <AdminSidebar />
             </div>
 
-            <div class="flex-grow-1" style="margin-left: 250px;">
-                <div class="p-4 p-md-5 w-100">
+            <!-- Content Area -->
+            <div class="flex-grow-1 admin-content-wrapper">
+                <div class="p-3 p-md-5 w-100">
                     @Body
                 </div>
             </div>
         </Authorized>
         <NotAuthorized>
-
             <div class="w-100 d-flex align-items-center justify-content-center">
                 @Body
             </div>
@@ -59,5 +78,21 @@
         background-color: rgba(100, 255, 218, 0.1);
         color: #64ffda;
         transform: translateY(-2px);
+    }
+    
+    .table-responsive .table th, 
+    .table-responsive .table td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .admin-content-wrapper {
+        margin-left: 250px;
+    }
+
+    @media (max-width: 768px) {
+        .admin-content-wrapper {
+            margin-left: 0;
+        }
     }
 </style>

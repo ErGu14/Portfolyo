@@ -50,7 +50,16 @@
                                 <td class="ps-4">
                                     @if (!string.IsNullOrEmpty(cert.Path))
                                     {
-                                        <img src="@(string.IsNullOrEmpty(cert.Path) ? "" : (cert.Path.StartsWith("http") ? cert.Path : (!cert.Path.Contains(".") ? "https://images.unsplash.com/" + cert.Path + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (cert.Path.Contains("/") ? Http.BaseAddress + cert.Path.TrimStart('/') : Http.BaseAddress + "images/certificates/" + cert.Path))))" alt="Sertifika" class="img-thumbnail bg-transparent border-secondary" style="height: 60px; object-fit: cover;" />
+                                        if(cert.Path.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <a href="@(cert.Path.StartsWith("http") ? cert.Path : (cert.Path.Contains("/") ? Http.BaseAddress + cert.Path.TrimStart('/') : Http.BaseAddress + "pdfs/certificates/" + cert.Path))" target="_blank" class="d-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded text-danger text-decoration-none border border-danger border-opacity-25" style="width: 60px; height: 60px;" title="PDF Görüntüle">
+                                                <i class="fas fa-file-pdf fs-3"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <img src="@(cert.Path.StartsWith("http") ? cert.Path : (!cert.Path.Contains(".") ? "https://images.unsplash.com/" + cert.Path + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (cert.Path.Contains("/") ? Http.BaseAddress + cert.Path.TrimStart('/') : Http.BaseAddress + "images/certificates/" + cert.Path)))" alt="Sertifika" class="img-thumbnail bg-transparent border-secondary" style="height: 60px; width: 60px; object-fit: cover;" />
+                                        }
                                     }
                                     else
                                     {
@@ -130,8 +139,17 @@
                                 @if (!string.IsNullOrEmpty(editingCertificate.Path) && editingCertificate.Id != 0)
                                 {
                                     <div class="mt-2">
-                                        <span class="text-secondary small">Mevcut Resim:</span><br />
-                                        <img src="@(string.IsNullOrEmpty(editingCertificate.Path) ? "" : (editingCertificate.Path.StartsWith("http") ? editingCertificate.Path : (!editingCertificate.Path.Contains(".") ? "https://images.unsplash.com/" + editingCertificate.Path + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (editingCertificate.Path.Contains("/") ? Http.BaseAddress + editingCertificate.Path.TrimStart('/') : Http.BaseAddress + "images/certificates/" + editingCertificate.Path))))" alt="Mevcut Resim" class="img-thumbnail bg-transparent border-secondary mt-1" style="height: 100px; object-fit: cover;" />
+                                        <span class="text-secondary small">Mevcut Dosya:</span><br />
+                                        @if(editingCertificate.Path.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <a href="@(editingCertificate.Path.StartsWith("http") ? editingCertificate.Path : (editingCertificate.Path.Contains("/") ? Http.BaseAddress + editingCertificate.Path.TrimStart('/') : Http.BaseAddress + "pdfs/certificates/" + editingCertificate.Path))" target="_blank" class="d-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded text-danger text-decoration-none border border-danger border-opacity-25 mt-1" style="width: 100px; height: 100px;">
+                                                <i class="fas fa-file-pdf fa-2x"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <img src="@(editingCertificate.Path.StartsWith("http") ? editingCertificate.Path : (!editingCertificate.Path.Contains(".") ? "https://images.unsplash.com/" + editingCertificate.Path + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (editingCertificate.Path.Contains("/") ? Http.BaseAddress + editingCertificate.Path.TrimStart('/') : Http.BaseAddress + "images/certificates/" + editingCertificate.Path)))" alt="Mevcut Resim" class="img-thumbnail bg-transparent border-secondary mt-1" style="height: 100px; object-fit: cover;" />
+                                        }
                                     </div>
                                 }
                             </div>
