@@ -95,4 +95,14 @@
             margin-left: 0 !important;
         }
     }
+
+    /* Sticky actions column for responsive tables */
+    .table-responsive .table th:last-child,
+    .table-responsive .table td:last-child {
+        position: sticky;
+        right: 0;
+        background-color: #0d213f !important;
+        z-index: 2;
+        box-shadow: -5px 0 10px -5px rgba(0,0,0,0.5);
+    }
 </style>
