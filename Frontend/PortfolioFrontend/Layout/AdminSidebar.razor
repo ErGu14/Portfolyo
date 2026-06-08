@@ -66,9 +66,14 @@
 
     <hr class="border-secondary opacity-25 mt-4 mb-4" />
 
-    <button class="btn btn-outline-danger w-100 py-2 d-flex align-items-center justify-content-center gap-2" @onclick="Logout">
-        <i class="fas fa-sign-out-alt"></i> Çıkış Yap
-    </button>
+    <div class="d-flex flex-column gap-2">
+        <a href="/" class="btn btn-outline-info w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+            <i class="fas fa-globe"></i> Siteye Git
+        </a>
+        <button class="btn btn-outline-danger w-100 py-2 d-flex align-items-center justify-content-center gap-2" @onclick="Logout">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+        </button>
+    </div>
 </div>
 
 <style>
