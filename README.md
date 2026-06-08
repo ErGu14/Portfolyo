@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Frontend/PortfolioFrontend/wwwroot/images/logo.png" alt="Logo" width="150" height="150" onerror="this.src='https://raw.githubusercontent.com/devicons/devicon/master/icons/dot-net/dot-net-original-wordmark.svg'; this.width=120; this.height=120;"/>
+  <img src="Frontend/PortfolioFrontend/wwwroot/images/foto.jpg" alt="Eray Gülüçmen" width="150" height="150" style="border-radius: 50%; object-fit: cover;" />
 
   # Eray Gülüçmen - Modern Full-Stack Portfolio
 
