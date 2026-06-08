@@ -1,1 +1,2 @@
-https://github.com/ErGu14/Portfolyo
+GitHub Linki: https://github.com/ErGu14/Portfolyo
+GitHub PAT (API Key): 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
