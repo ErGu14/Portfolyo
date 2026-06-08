@@ -1,0 +1,37 @@
+## Visual Studio / .NET
+[Oo]bj/
+[Bb]in/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.DS_Store
+
+# Mac
+.DS_Store
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Local env files
+*.env
+appsettings.Development.json
+appsettings.Local.json
+
+# Migrations & SQLite DBs (isteğe bağlı)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# Diğer
+*.log
