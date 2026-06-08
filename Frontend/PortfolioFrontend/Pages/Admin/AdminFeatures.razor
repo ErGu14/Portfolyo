@@ -1,0 +1,287 @@
+@page "/admin/features"
+@layout AdminLayout
+@inject HttpClient Http
+@using PortfolioFrontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Json
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-white fw-bold mb-0">Özellik Kartları (Sistem & Donanım)</h3>
+        <button class="btn btn-accent" @onclick="OpenAddModal">
+            <i class="fas fa-plus me-2"></i> Yeni Ekle
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-accent" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else if (features == null || !features.Any())
+    {
+        <div class="glass-panel p-5 text-center">
+            <i class="fas fa-server fa-3x text-secondary mb-3"></i>
+            <h5 class="text-white">Henüz özellik kartı eklenmemiş.</h5>
+        </div>
+    }
+    else
+    {
+        <div class="glass-panel p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover table-dark mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">İkon</th>
+                            <th>Başlık</th>
+                            <th>Açıklama</th>
+                            <th>Aktif Mi?</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var feature in features)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <i class="@feature.IconPath text-light" style="font-size: 2rem;"></i>
+                                </td>
+                                <td><span class="fw-semibold text-white">@feature.Title</span></td>
+                                <td><span class="text-secondary">@(feature.Description?.Length > 50 ? feature.Description.Substring(0, 50) + "..." : feature.Description)</span></td>
+                                <td>
+                                    @if (feature.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Pasif</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-info me-2" @onclick="() => OpenEditModal(feature)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteModal(feature)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-white fw-bold">@(editingFeature.Id == 0 ? "Yeni Özellik Ekle" : "Özelliği Düzenle")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <EditForm Model="editingFeature" OnValidSubmit="SaveFeature">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Başlık (Örn: Sistem & Donanım)</label>
+                                <InputText @bind-Value="editingFeature.Title" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">İkon Sınıfı (Örn: fas fa-server)</label>
+                                <InputText @bind-Value="editingFeature.IconPath" class="form-control form-control-glass" />
+                                <small class="text-secondary mt-1 d-block">İkonları <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" class="text-accent text-decoration-underline">FontAwesome</a> üzerinden bulabilirsiniz.</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label text-white small">Açıklama</label>
+                                <InputTextArea @bind-Value="editingFeature.Description" class="form-control form-control-glass" rows="4" />
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-check form-switch">
+                                    <InputCheckbox @bind-Value="editingFeature.IsActive" class="form-check-input" id="featureIsActive" />
+                                    <label class="form-check-label text-white ms-2" for="featureIsActive">Aktif (Sitede Göster)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2" @onclick="CloseModal">İptal</button>
+                            <button type="submit" class="btn btn-accent" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Kaydediliyor...</span>
+                                }
+                                else
+                                {
+                                    <span>Kaydet</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isDeleteModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Silme Onayı</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-white fs-5">"<span class="text-accent">@featureToDelete?.Title</span>" özelliğini silmek istediğinize emin misiniz?</p>
+                    <p class="text-secondary small">Bu işlem geri alınamaz.</p>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="CloseDeleteModal">İptal</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteFeature" disabled="@isSaving">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<FeatureDto>? features;
+    private bool isLoading = true;
+    
+    private bool isModalOpen = false;
+    private bool isDeleteModalOpen = false;
+    private bool isSaving = false;
+    
+    private FeatureDto editingFeature = new();
+    private FeatureDto? featureToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFeatures();
+    }
+
+    private async Task LoadFeatures()
+    {
+        isLoading = true;
+        try
+        {
+            features = await Http.GetFromJsonAsync<List<FeatureDto>>("api/Features");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Özellikler yüklenirken hata: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        editingFeature = new FeatureDto { IsActive = true };
+        isModalOpen = true;
+    }
+
+    private void OpenEditModal(FeatureDto feature)
+    {
+        editingFeature = new FeatureDto
+        {
+            Id = feature.Id,
+            Title = feature.Title,
+            Description = feature.Description,
+            IconPath = feature.IconPath,
+            IsActive = feature.IsActive
+        };
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+    }
+
+    private void OpenDeleteModal(FeatureDto feature)
+    {
+        featureToDelete = feature;
+        isDeleteModalOpen = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        isDeleteModalOpen = false;
+        featureToDelete = null;
+    }
+
+    private async Task SaveFeature()
+    {
+        isSaving = true;
+        try
+        {
+            HttpResponseMessage response;
+            if (editingFeature.Id == 0)
+            {
+                response = await Http.PostAsJsonAsync("api/Features", editingFeature);
+            }
+            else
+            {
+                response = await Http.PutAsJsonAsync("api/Features", editingFeature);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadFeatures();
+                CloseModal();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Özellik kaydedilirken bir hata oluştu: {response.StatusCode} - {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Kayıt hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteFeature()
+    {
+        if (featureToDelete == null) return;
+        
+        isSaving = true;
+        try
+        {
+            var response = await Http.DeleteAsync($"api/Features/{featureToDelete.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadFeatures();
+                CloseDeleteModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Silme hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

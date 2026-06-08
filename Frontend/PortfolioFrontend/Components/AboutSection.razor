@@ -1,0 +1,97 @@
+@using PortfolioFrontend.Models
+@inject HttpClient Http
+
+<section id="about-section" class="py-5">
+    <div class="container" style="padding-top: 80px;">
+        <div class="row reveal">
+            <div class="col-12">
+                <h2 class="section-title fw-bold">Hakkımda</h2>
+            </div>
+            
+            <div class="col-lg-7 text-light fs-5 mt-4">
+                @if (Settings == null)
+                {
+                    <p>Yükleniyor...</p>
+                }
+                else
+                {
+
+                    <p style="white-space: pre-wrap;">@Settings.Hakkimda</p>
+                }
+                
+                <p class="mt-4">
+                    İşte son zamanlarda üzerinde çalıştığım teknolojilerden bazıları:
+                </p>
+                <ul class="d-flex flex-wrap p-0 mt-4" style="list-style: none;">
+                    @if (Technologies != null && Technologies.Any())
+                    {
+                        foreach (var tech in Technologies.Where(t => t.IsActive))
+                        {
+                            <li class="w-50 mb-2"><span class="text-accent me-2">▹</span> @tech.Name</li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="w-50 mb-2"><span class="text-accent me-2">▹</span> Yükleniyor...</li>
+                    }
+                </ul>
+            </div>
+            
+            <div class="col-lg-4 offset-lg-1 mt-5 mt-lg-4 d-flex flex-column gap-3">
+                @if (Features != null && Features.Any())
+                {
+                    foreach (var feature in Features.Where(f => f.IsActive))
+                    {
+                        <div class="glass-panel p-4 h-100 position-relative d-flex flex-column justify-content-center border-0" style="background: rgba(100, 255, 218, 0.05);">
+                            <div class="text-center mb-4">
+                                <i class="@feature.IconPath text-accent" style="font-size: 3rem;"></i>
+                            </div>
+                            <h4 class="text-white text-center fw-bold mb-3">@feature.Title</h4>
+                            <p class="text-light text-center small">
+                                @feature.Description
+                            </p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private SiteSettingsDto? Settings;
+    private List<RecentTechnologyDto> Technologies = new();
+    private List<FeatureDto> Features = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var settingsList = await Http.GetFromJsonAsync<List<SiteSettingsDto>>("api/SiteSettings");
+            Settings = settingsList?.FirstOrDefault();
+        }
+        catch (Exception) { }
+
+        try
+        {
+            var techs = await Http.GetFromJsonAsync<List<RecentTechnologyDto>>("api/RecentTechnologies");
+            if (techs != null) Technologies = techs;
+        }
+        catch (Exception) { }
+
+        try
+        {
+            var features = await Http.GetFromJsonAsync<List<FeatureDto>>("api/Features");
+            if (features != null) Features = features;
+        }
+        catch (Exception) { }
+
+        if (Settings == null || string.IsNullOrWhiteSpace(Settings.Hakkimda))
+        {
+            Settings = new SiteSettingsDto 
+            { 
+                Hakkimda = "Merhaba! Ben Eray..."
+            };
+        }
+    }
+}

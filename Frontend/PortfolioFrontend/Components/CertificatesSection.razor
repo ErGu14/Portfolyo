@@ -1,0 +1,151 @@
+@using PortfolioFrontend.Models
+@inject HttpClient Http
+
+<section id="certificates-section" class="py-5">
+    <div class="container" style="padding-top: 80px;">
+        <div class="row reveal mb-5">
+            <div class="col-12">
+                <h2 class="section-title fw-bold">Eğitimler & Sertifikalar</h2>
+            </div>
+        </div>
+
+        @if (AllCertificates == null)
+        {
+            <div class="text-center text-accent">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+            </div>
+        }
+        else if (!AllCertificates.Any())
+        {
+            <p class="text-light text-center">Henüz sertifika eklenmemiş.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var cert in PaginatedCertificates)
+                {
+                    <div class="col-md-6 col-lg-4 reveal active">
+                        <div class="glass-panel p-4 h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <i class="fas fa-certificate text-accent fs-1"></i>
+                                <span class="badge bg-accent text-bg-dark border border-1 border-accent">@cert.AlmaTarihi.Year</span>
+                            </div>
+                            <h4 class="text-white fw-bold mb-2">@cert.Baslik</h4>
+                            <p class="text-accent font-monospace small mb-3">@cert.Kurum</p>
+                            @if (!string.IsNullOrEmpty(cert.Path))
+                            {
+                                <a href="@(cert.Path.StartsWith("http") ? cert.Path : Http.BaseAddress + cert.Path.TrimStart('/'))" target="_blank" class="text-white hover-accent fs-6 mt-auto">Sertifikayı Görüntüle <i class="fas fa-external-link-alt ms-1"></i></a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+
+            @if (TotalPages > 1)
+            {
+                <div class="d-flex justify-content-center mt-5 reveal active">
+                    <nav>
+                        <ul class="pagination gap-2">
+                            <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+                                <button class="page-link custom-page-link" @onclick="PrevPage"><i class="fas fa-chevron-left"></i></button>
+                            </li>
+                            @for (int i = 1; i <= TotalPages; i++)
+                            {
+                                var pageNumber = i;
+                                <li class="page-item @(CurrentPage == pageNumber ? "active" : "")">
+                                    <button class="page-link custom-page-link" @onclick="() => ChangePage(pageNumber)">@pageNumber</button>
+                                </li>
+                            }
+                            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+                                <button class="page-link custom-page-link" @onclick="NextPage"><i class="fas fa-chevron-right"></i></button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+<style>
+    .border-accent {
+        border-color: var(--accent-primary) !important;
+    }
+    .custom-page-link {
+        background-color: transparent !important;
+        border: 1px solid var(--accent-primary) !important;
+        color: var(--accent-primary) !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease;
+    }
+    .custom-page-link:hover {
+        background-color: var(--accent-glow) !important;
+    }
+    .page-item.active .custom-page-link {
+        background-color: var(--accent-primary) !important;
+        color: var(--bg-primary) !important;
+        font-weight: bold;
+    }
+    .page-item.disabled .custom-page-link {
+        border-color: rgba(255,255,255,0.1) !important;
+        color: rgba(255,255,255,0.2) !important;
+    }
+</style>
+
+@code {
+    private List<CertificateDto>? AllCertificates;
+    private int CurrentPage = 1;
+    private int ItemsPerPage = 3;
+
+    private int TotalPages => AllCertificates == null ? 0 : (int)Math.Ceiling(AllCertificates.Count / (double)ItemsPerPage);
+
+    private IEnumerable<CertificateDto> PaginatedCertificates => AllCertificates?
+        .Skip((CurrentPage - 1) * ItemsPerPage)
+        .Take(ItemsPerPage) ?? Enumerable.Empty<CertificateDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var apiCerts = await Http.GetFromJsonAsync<List<CertificateDto>>("api/Certificates");
+            if (apiCerts != null && apiCerts.Any())
+            {
+                AllCertificates = apiCerts.Where(c => c.AktifMi).OrderByDescending(c => c.AlmaTarihi).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Sertifikalar çekilemedi: " + ex.Message);
+        }
+
+        if (AllCertificates == null || !AllCertificates.Any())
+        {
+            AllCertificates = new List<CertificateDto>
+            {
+                new CertificateDto { Baslik = "Bilgisayar Programcılığı", Kurum = "İstanbul Bilgi Üniversitesi", AlmaTarihi = new DateTime(2025, 1, 1) },
+                new CertificateDto { Baslik = "Advanced C# & .NET 8", Kurum = "BTK Akademi", AlmaTarihi = new DateTime(2024, 1, 1) },
+                new CertificateDto { Baslik = "Web API & Clean Architecture", Kurum = "Udemy", AlmaTarihi = new DateTime(2023, 1, 1) },
+                new CertificateDto { Baslik = "Frontend Web Development", Kurum = "Coursera", AlmaTarihi = new DateTime(2023, 1, 1) },
+                new CertificateDto { Baslik = "Network & Server Administration", Kurum = "Cisco", AlmaTarihi = new DateTime(2018, 1, 1) }
+            };
+        }
+    }
+
+    private void ChangePage(int pageNumber)
+    {
+        CurrentPage = pageNumber;
+    }
+
+    private void PrevPage()
+    {
+        if (CurrentPage > 1) CurrentPage--;
+    }
+
+    private void NextPage()
+    {
+        if (CurrentPage < TotalPages) CurrentPage++;
+    }
+}

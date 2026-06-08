@@ -1,0 +1,91 @@
+@page "/admin/dashboard"
+@layout AdminLayout
+@inject HttpClient Http
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-white fw-bold mb-0">Gösterge Paneli</h3>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-accent" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="glass-panel p-4 text-center border-top border-3" style="border-color: #64ffda !important;">
+                    <i class="fas fa-project-diagram fa-3x text-accent mb-3"></i>
+                    <h2 class="text-white fw-bold display-5">@projectCount</h2>
+                    <p class="text-secondary mb-0">Toplam Proje</p>
+                    <a href="/admin/projects" class="btn btn-sm btn-outline-info mt-3">Yönet</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-panel p-4 text-center border-top border-3" style="border-color: #ff6b6b !important;">
+                    <i class="fas fa-envelope fa-3x mb-3" style="color: #ff6b6b;"></i>
+                    <h2 class="text-white fw-bold display-5">@messageCount</h2>
+                    <p class="text-secondary mb-0">Gelen Mesaj</p>
+                    <a href="/admin/messages" class="btn btn-sm btn-outline-danger mt-3">Oku</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-panel p-4 text-center border-top border-3" style="border-color: #fca311 !important;">
+                    <i class="fas fa-certificate fa-3x mb-3" style="color: #fca311;"></i>
+                    <h2 class="text-white fw-bold display-5">@certCount</h2>
+                    <p class="text-secondary mb-0">Sertifika</p>
+                    <a href="/admin/certificates" class="btn btn-sm btn-outline-warning mt-3">Güncelle</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-panel p-4 text-center border-top border-3" style="border-color: #4facfe !important;">
+                    <i class="fas fa-share-alt fa-3x mb-3" style="color: #4facfe;"></i>
+                    <h2 class="text-white fw-bold display-5">@socialCount</h2>
+                    <p class="text-secondary mb-0">Sosyal Medya</p>
+                    <a href="/admin/social" class="btn btn-sm btn-outline-primary mt-3">Düzenle</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private int projectCount = 0;
+    private int messageCount = 0;
+    private int certCount = 0;
+    private int socialCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            
+            var projTask = Http.GetFromJsonAsync<List<PortfolioFrontend.Models.ProjectDto>>("api/Projects");
+            var msgTask = Http.GetFromJsonAsync<List<PortfolioFrontend.Models.MessageDto>>("api/Messages");
+            var certTask = Http.GetFromJsonAsync<List<PortfolioFrontend.Models.CertificateDto>>("api/Certificates");
+            var socTask = Http.GetFromJsonAsync<List<PortfolioFrontend.Models.SocialMediaDto>>("api/SocialMedias");
+
+            await Task.WhenAll(projTask, msgTask, certTask, socTask);
+
+            projectCount = projTask.Result?.Count ?? 0;
+            messageCount = msgTask.Result?.Count ?? 0;
+            certCount = certTask.Result?.Count ?? 0;
+            socialCount = socTask.Result?.Count ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Dashboard yüklenirken hata oluştu: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

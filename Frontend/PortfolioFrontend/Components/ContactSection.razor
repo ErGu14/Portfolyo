@@ -1,0 +1,156 @@
+@using PortfolioFrontend.Models
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<section id="contact-section" class="py-5" style="margin-bottom: 100px;">
+    <div class="container reveal" style="padding-top: 80px;">
+        <h2 class="section-title fw-bold">İletişime Geçin</h2>
+        
+        <div class="row mt-5">
+            <div class="col-lg-5 mb-5 mb-lg-0">
+                <h4 class="fw-bold mb-4">Bir Projeniz Mi Var?</h4>
+                <p class="text-light fs-5 mb-5">
+                    Yeni fırsatlara ve projelere her zaman açığım. Sistem mimarisi, backend geliştirme veya herhangi bir teknik konuda yardıma ihtiyacınız varsa e-posta atabilirsiniz.
+                </p>
+                
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="icon-circle bg-accent text-bg-dark d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px;">
+                        <i class="fas fa-envelope text-accent"></i>
+                    </div>
+                    <div>
+                        <p class="m-0 text-light small">Email</p>
+                        <h6 class="m-0 fw-bold">eraygulucmen@hotmail.com</h6>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-circle bg-accent text-bg-dark d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px;">
+                        <i class="fas fa-phone text-accent"></i>
+                    </div>
+                    <div>
+                        <p class="m-0 text-light small">Telefon</p>
+                        <h6 class="m-0 fw-bold">+90 534 692 14 47</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 offset-lg-1">
+                <div class="glass-panel p-5">
+                    @if (isSubmitted)
+                    {
+                        <div class="alert alert-success bg-transparent border-accent text-accent text-center" role="alert">
+                            <i class="fas fa-check-circle fs-3 mb-2"></i><br/>
+                            Mesajınız başarıyla iletildi! En kısa sürede dönüş yapacağım.
+                        </div>
+                    }
+                    else
+                    {
+                        <EditForm Model="@messageDto" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger small mb-3" />
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label text-light small text-uppercase fw-bold">Adınız Soyadınız</label>
+                                    <InputText class="form-control custom-input" placeholder="Ad Soyad" @bind-Value="messageDto.AdSoyad" />
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label text-light small text-uppercase fw-bold">E-Posta Adresi</label>
+                                    <InputText class="form-control custom-input" placeholder="mail@ornek.com" @bind-Value="messageDto.Email" />
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-light small text-uppercase fw-bold">Konu</label>
+                                <InputText class="form-control custom-input" placeholder="Hangi konuda görüşeceğiz?" @bind-Value="messageDto.Konu" />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-light small text-uppercase fw-bold">Mesajınız</label>
+                                <InputTextArea class="form-control custom-input" rows="4" placeholder="Projenizi veya mesajınızı detaylandırın..." @bind-Value="messageDto.Mesaj"></InputTextArea>
+                            </div>
+                            <button type="submit" class="btn btn-premium w-100 py-3 mt-2" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Gönderiliyor...</span>
+                                }
+                                else
+                                {
+                                    <span>Mesaj Gönder <i class="fas fa-paper-plane ms-2"></i></span>
+                                }
+                            </button>
+                            @if (!string.IsNullOrEmpty(errorMessage))
+                            {
+                                <div class="text-danger small mt-3 text-center">@errorMessage</div>
+                            }
+                        </EditForm>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bg-accent {
+        background-color: rgba(100, 255, 218, 0.1);
+    }
+    
+    .border-accent {
+        border-color: var(--accent-primary) !important;
+    }
+    
+    .custom-input {
+        background-color: rgba(11, 25, 47, 0.7) !important;
+        border: 1px solid rgba(100, 255, 218, 0.1) !important;
+        color: white !important;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .custom-input:focus {
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 0.25rem rgba(100, 255, 218, 0.25) !important;
+    }
+    
+    .custom-input::placeholder {
+        color: rgba(255, 255, 255, 0.3) !important;
+    }
+</style>
+
+@code {
+    private MessageCreateDto messageDto = new MessageCreateDto();
+    private bool isSubmitting = false;
+    private bool isSubmitted = false;
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/Messages", messageDto);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                isSubmitted = true;
+                messageDto = new MessageCreateDto(); // Formu temizle
+            }
+            else
+            {
+
+                isSubmitted = true;
+            }
+        }
+        catch (Exception)
+        {
+
+            isSubmitted = true;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

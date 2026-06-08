@@ -1,0 +1,179 @@
+@using PortfolioFrontend.Models
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+
+<section id="hero-section" class="d-flex align-items-center" style="min-height: 100vh; padding-top: 100px;">
+    <div id="hero-content" class="container position-relative z-index-1">
+        @if (Settings == null)
+        {
+            <div class="text-center text-accent">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row align-items-center">
+
+                <div class="col-lg-7 order-2 order-lg-1 mt-5 mt-lg-0">
+                    <p class="text-accent font-monospace mb-3 ms-1" style="font-size: 1.1rem;">Merhaba, benim adım</p>
+                    <h1 class="display-2 fw-bolder text-white mb-2" style="font-size: clamp(40px, 8vw, 80px); line-height: 1.1;">@Settings.AdSoyad</h1>
+                    <h1 class="display-3 fw-bolder text-light mb-4" style="font-size: clamp(30px, 6vw, 60px); line-height: 1.1;">
+                        <span id="typing-element"></span><span class="cursor">|</span>
+                    </h1>
+                    <p class="text-light fs-5 mb-5 w-75 hero-desc">
+                        @Settings.Hakkimda
+                    </p>
+                    
+                    <div class="d-flex gap-4 align-items-center">
+                        <a href="@(Http.BaseAddress + Settings.CvPath.TrimStart('/'))" target="_blank" class="btn btn-premium btn-premium-large">
+                            Özgeçmişimi İncele <i class="fas fa-external-link-alt ms-2"></i>
+                        </a>
+                        @if (SocialMedias != null && SocialMedias.Any())
+                        {
+                            @foreach (var sm in SocialMedias)
+                            {
+                                <a href="@(string.IsNullOrEmpty(sm.Link) ? "#" : (sm.Link.StartsWith("http") ? sm.Link : "https://" + sm.Link))" target="_blank" class="text-light hover-accent fs-3" title="@sm.PlatformAd"><i class="@sm.IconPath"></i></a>
+                            }
+                        }
+                    </div>
+                </div>
+                
+
+                <div class="col-lg-5 order-1 order-lg-2 d-flex justify-content-center">
+                    <div class="hero-image-wrapper position-relative">
+                        <div class="hero-image-border border border-2 rounded"></div>
+                        <img src="@(string.IsNullOrEmpty(Settings.ProfilFoto) ? "foto.png" : (Settings.ProfilFoto.StartsWith("http") ? Settings.ProfilFoto : (Settings.ProfilFoto.Contains("/") ? Http.BaseAddress + Settings.ProfilFoto.TrimStart('/') : Http.BaseAddress + "images/" + Settings.ProfilFoto)))" alt="@Settings.AdSoyad" class="hero-image rounded shadow-lg position-relative" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+    .cursor {
+        animation: blink 1s infinite;
+        color: var(--accent-primary);
+    }
+
+    @@keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    .hover-accent {
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .hover-accent:hover {
+        color: var(--accent-primary) !important;
+        transform: translateY(-3px);
+    }
+    
+    .hero-image-wrapper {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 5;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        filter: grayscale(30%) contrast(1.1);
+    }
+    
+    .hero-image-border {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 100%;
+        height: 100%;
+        border-color: var(--accent-primary) !important;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    
+    .hero-image-wrapper:hover .hero-image {
+        transform: translate(-10px, -10px);
+        filter: grayscale(0%) contrast(1);
+    }
+    
+    .hero-image-wrapper:hover .hero-image-border {
+        transform: translate(10px, 10px);
+    }
+    
+    .z-index-1 {
+        z-index: 1;
+    }
+    
+    @@media (max-width: 991px) {
+        .hero-desc {
+            width: 100% !important;
+        }
+    }
+</style>
+
+@code {
+    private SiteSettingsDto? Settings;
+    private List<SocialMediaDto>? SocialMedias;
+    private bool isJsInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var settingsList = await Http.GetFromJsonAsync<List<SiteSettingsDto>>("api/SiteSettings");
+            Settings = settingsList?.FirstOrDefault();
+            
+            SocialMedias = await Http.GetFromJsonAsync<List<SocialMediaDto>>("api/SocialMedias");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Veri çekilemedi: " + ex.Message);
+        }
+        
+        if (Settings == null)
+        {
+
+            Settings = new SiteSettingsDto 
+            { 
+                AdSoyad = "Eray Gülüçmen", 
+                Hakkimda = "Modern backend teknolojileri ve güçlü sistem mimarisi yeteneklerine sahip bir bilişim uzmanıyım.",
+                Unvan = "Yazılım Geliştirici.,.NET Backend Uzmanı.,Donanım Uzmanı.,Web Geliştirici.",
+                CvPath = "/cv/Eray_Gulucmen_CV_TR.pdf"
+            };
+        }
+        
+        if (SocialMedias == null || !SocialMedias.Any())
+        {
+            SocialMedias = new List<SocialMediaDto>
+            {
+                new SocialMediaDto { PlatformAd = "GitHub", Link = "https://github.com/ErGu14", IconPath = "fab fa-github" },
+                new SocialMediaDto { PlatformAd = "LinkedIn", Link = "https://linkedin.com/in/eray-gulucmen-704b0a32a", IconPath = "fab fa-linkedin" }
+            };
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+        if (!isJsInitialized && Settings != null)
+        {
+            isJsInitialized = true;
+            try
+            {
+                var words = string.IsNullOrWhiteSpace(Settings.Unvan) 
+                    ? new[] { "Yazılım Geliştirici.", ".NET Backend Uzmanı.", "Sistem Mimarı.", "Donanım Uzmanı.", "Veritabanı Optimizasyon Uzmanı.", "RESTful API Geliştiricisi." } 
+                    : Settings.Unvan.Split(',');
+                    
+                await JSRuntime.InvokeVoidAsync("portfolio.initTypewriter", "typing-element", words);
+                await JSRuntime.InvokeVoidAsync("portfolio.initParallax");
+            }
+            catch { /* Hataları yoksay */ }
+        }
+    }
+}

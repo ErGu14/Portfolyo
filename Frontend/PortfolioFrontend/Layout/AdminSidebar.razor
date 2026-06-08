@@ -1,0 +1,103 @@
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+@using PortfolioFrontend.Auth
+
+<div class="admin-sidebar glass-panel h-100 d-flex flex-column py-4 px-3" style="width: 250px;">
+    <div class="text-center mb-4">
+        <i class="fas fa-user-shield text-accent mb-2" style="font-size: 2rem;"></i>
+        <h5 class="text-white fw-bold mb-0">Admin Panel</h5>
+    </div>
+
+    <hr class="border-secondary opacity-25 mb-4" />
+
+    <ul class="nav flex-column gap-2 mb-auto">
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/dashboard" Match="NavLinkMatch.All">
+                <i class="fas fa-home me-2 w-20px text-center"></i> Gösterge Paneli
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/projects">
+                <i class="fas fa-project-diagram me-2 w-20px text-center"></i> Projeler
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/messages">
+                <i class="fas fa-envelope me-2 w-20px text-center"></i> Gelen Mesajlar
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/certificates">
+                <i class="fas fa-certificate me-2 w-20px text-center"></i> Sertifikalar
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/social">
+                <i class="fas fa-share-alt me-2 w-20px text-center"></i> Sosyal Medya
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/technologies">
+                <i class="fas fa-code me-2 w-20px text-center"></i> Teknolojiler
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/skills">
+                <i class="fas fa-laptop-code me-2 w-20px text-center"></i> Yetenekler
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/features">
+                <i class="fas fa-server me-2 w-20px text-center"></i> Özellik Kartları
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/settings">
+                <i class="fas fa-cog me-2 w-20px text-center"></i> Site Ayarları
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link text-secondary px-3 py-2 rounded custom-nav-link" href="/admin/password">
+                <i class="fas fa-key me-2 w-20px text-center"></i> Şifre Değiştir
+            </NavLink>
+        </li>
+    </ul>
+
+    <hr class="border-secondary opacity-25 mt-4 mb-4" />
+
+    <button class="btn btn-outline-danger w-100 py-2 d-flex align-items-center justify-content-center gap-2" @onclick="Logout">
+        <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+    </button>
+</div>
+
+<style>
+    .w-20px {
+        width: 20px;
+    }
+    .custom-nav-link {
+        transition: all 0.2s ease;
+    }
+    .custom-nav-link:hover {
+        background: rgba(100, 255, 218, 0.05);
+        color: #64ffda !important;
+    }
+    .custom-nav-link.active {
+        background: rgba(100, 255, 218, 0.1);
+        color: #64ffda !important;
+        font-weight: 500;
+        border-left: 3px solid #64ffda;
+    }
+</style>
+
+@code {
+    private async Task Logout()
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        if (AuthStateProvider is CustomAuthStateProvider customProvider)
+        {
+            customProvider.MarkUserAsLoggedOut();
+        }
+        NavigationManager.NavigateTo("/admin");
+    }
+}

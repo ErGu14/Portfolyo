@@ -1,0 +1,11 @@
+D:\Kodlama\Portfolyo\Backend\Businness\bin\Debug\net8.0\Businness.deps.json
+D:\Kodlama\Portfolyo\Backend\Businness\bin\Debug\net8.0\Businness.dll
+D:\Kodlama\Portfolyo\Backend\Businness\bin\Debug\net8.0\Businness.pdb
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\Businness.GeneratedMSBuildEditorConfig.editorconfig
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\Businness.AssemblyInfoInputs.cache
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\Businness.AssemblyInfo.cs
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\Businness.csproj.CoreCompileInputs.cache
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\Businness.dll
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\refint\Businness.dll
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\Businness.pdb
+D:\Kodlama\Portfolyo\Backend\Businness\obj\Debug\net8.0\ref\Businness.dll

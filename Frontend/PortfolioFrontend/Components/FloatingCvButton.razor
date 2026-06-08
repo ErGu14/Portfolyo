@@ -1,0 +1,55 @@
+@inject HttpClient Http
+
+<a href="@(Http.BaseAddress + "cv/Eray_Gulucmen_CV_TR.pdf")" target="_blank" id="floating-cv-btn" class="d-flex align-items-center gap-3 text-decoration-none">
+    <div class="d-flex flex-column text-end">
+        <span class="text-white fw-bold fs-5 mb-0" style="line-height: 1;">CV İndir</span>
+        <span class="text-accent font-monospace small">(.pdf)</span>
+    </div>
+    <div class="icon-circle bg-accent text-bg-dark d-flex justify-content-center align-items-center rounded-circle border border-2" style="width: 60px; height: 60px; border-color: var(--accent-primary) !important;">
+        <i class="fas fa-file-pdf text-accent fs-3"></i>
+    </div>
+</a>
+
+<style>
+    .bg-accent {
+        background-color: var(--bg-tertiary);
+    }
+    .text-accent {
+        color: var(--accent-primary) !important;
+    }
+    
+    #floating-cv-btn {
+        position: fixed;
+        bottom: 50px;
+        right: 50px;
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(50px) scale(0.8);
+        pointer-events: none;
+        transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+        padding: 10px 15px;
+        border-radius: 50px;
+        background: rgba(10, 25, 47, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(100, 255, 218, 0.2);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    #floating-cv-btn.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    #floating-cv-btn:hover {
+        background: rgba(17, 34, 64, 0.95);
+        border-color: var(--accent-primary);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 35px var(--accent-glow-strong);
+    }
+    
+    #floating-cv-btn:hover .icon-circle {
+        background-color: var(--accent-glow) !important;
+    }
+</style>

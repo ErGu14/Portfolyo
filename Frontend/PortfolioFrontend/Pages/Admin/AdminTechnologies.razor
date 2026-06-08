@@ -1,0 +1,270 @@
+@page "/admin/technologies"
+@layout AdminLayout
+@inject HttpClient Http
+@using PortfolioFrontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Json
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-white fw-bold mb-0">Teknolojiler</h3>
+        <button class="btn btn-accent" @onclick="OpenAddModal">
+            <i class="fas fa-plus me-2"></i> Yeni Ekle
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-accent" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else if (technologies == null || !technologies.Any())
+    {
+        <div class="glass-panel p-5 text-center">
+            <i class="fas fa-code fa-3x text-secondary mb-3"></i>
+            <h5 class="text-white">Henüz teknoloji eklenmemiş.</h5>
+        </div>
+    }
+    else
+    {
+        <div class="glass-panel p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover table-dark mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Teknoloji Adı</th>
+                            <th>Aktif Mi?</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tech in technologies)
+                        {
+                            <tr>
+                                <td class="ps-4"><span class="fw-semibold text-white">@tech.Name</span></td>
+                                <td>
+                                    @if (tech.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Pasif</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-info me-2" @onclick="() => OpenEditModal(tech)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteModal(tech)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-white fw-bold">@(editingTech.Id == 0 ? "Yeni Teknoloji Ekle" : "Teknoloji Düzenle")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <EditForm Model="editingTech" OnValidSubmit="SaveTechnology">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="row g-4">
+                            <div class="col-md-12">
+                                <label class="form-label text-white small">Teknoloji Adı (Örn: C# & .NET 8)</label>
+                                <InputText @bind-Value="editingTech.Name" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-check form-switch mt-3">
+                                    <InputCheckbox @bind-Value="editingTech.IsActive" class="form-check-input" id="techIsActive" />
+                                    <label class="form-check-label text-white ms-2" for="techIsActive">Aktif (Sitede Göster)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2" @onclick="CloseModal">İptal</button>
+                            <button type="submit" class="btn btn-accent" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Kaydediliyor...</span>
+                                }
+                                else
+                                {
+                                    <span>Kaydet</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isDeleteModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Silme Onayı</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-white fs-5">"<span class="text-accent">@techToDelete?.Name</span>" adlı teknolojiyi silmek istediğinize emin misiniz?</p>
+                    <p class="text-secondary small">Bu işlem geri alınamaz.</p>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="CloseDeleteModal">İptal</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteTechnology" disabled="@isSaving">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<RecentTechnologyDto>? technologies;
+    private bool isLoading = true;
+    
+    private bool isModalOpen = false;
+    private bool isDeleteModalOpen = false;
+    private bool isSaving = false;
+    
+    private RecentTechnologyDto editingTech = new();
+    private RecentTechnologyDto? techToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTechnologies();
+    }
+
+    private async Task LoadTechnologies()
+    {
+        isLoading = true;
+        try
+        {
+            technologies = await Http.GetFromJsonAsync<List<RecentTechnologyDto>>("api/RecentTechnologies");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Teknolojiler yüklenirken hata: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        editingTech = new RecentTechnologyDto { IsActive = true };
+        isModalOpen = true;
+    }
+
+    private void OpenEditModal(RecentTechnologyDto tech)
+    {
+        editingTech = new RecentTechnologyDto
+        {
+            Id = tech.Id,
+            Name = tech.Name,
+            IsActive = tech.IsActive
+        };
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+    }
+
+    private void OpenDeleteModal(RecentTechnologyDto tech)
+    {
+        techToDelete = tech;
+        isDeleteModalOpen = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        isDeleteModalOpen = false;
+        techToDelete = null;
+    }
+
+    private async Task SaveTechnology()
+    {
+        isSaving = true;
+        try
+        {
+            HttpResponseMessage response;
+            if (editingTech.Id == 0)
+            {
+                response = await Http.PostAsJsonAsync("api/RecentTechnologies", editingTech);
+            }
+            else
+            {
+                response = await Http.PutAsJsonAsync("api/RecentTechnologies", editingTech);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadTechnologies();
+                CloseModal();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Teknoloji kaydedilirken bir hata oluştu: {response.StatusCode} - {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Kayıt hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteTechnology()
+    {
+        if (techToDelete == null) return;
+        
+        isSaving = true;
+        try
+        {
+            var response = await Http.DeleteAsync($"api/RecentTechnologies/{techToDelete.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadTechnologies();
+                CloseDeleteModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Silme hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

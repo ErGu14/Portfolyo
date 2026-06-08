@@ -1,0 +1,343 @@
+@page "/admin/projects"
+@layout AdminLayout
+@inject HttpClient Http
+@using PortfolioFrontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-white fw-bold mb-0">Projeler Yönetimi</h3>
+        <button class="btn btn-accent" @onclick="ShowAddModal">
+            <i class="fas fa-plus me-2"></i> Yeni Proje Ekle
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-accent" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else if (!projects.Any())
+    {
+        <div class="alert alert-glass text-white text-center py-5">
+            <i class="fas fa-info-circle fa-2x mb-3 text-accent d-block"></i>
+            Kayıtlı proje bulunamadı.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-dark table-hover table-glass align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 80px;">Resim</th>
+                        <th scope="col">Başlık</th>
+                        <th scope="col">Teknolojiler</th>
+                        <th scope="col">Durum</th>
+                        <th scope="col" class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in projects)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(project.Resim))
+                                {
+                                    <img src="@(string.IsNullOrEmpty(project.Resim) ? "" : (project.Resim.StartsWith("http") ? project.Resim : (!project.Resim.Contains(".") ? "https://images.unsplash.com/" + project.Resim + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (project.Resim.Contains("/") ? Http.BaseAddress + project.Resim.TrimStart('/') : Http.BaseAddress + "images/projects/" + project.Resim))))" alt="Proje Resmi" class="img-thumbnail bg-transparent border-secondary" style="height: 60px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; opacity: 0.5;">
+                                        <i class="fas fa-image text-white"></i>
+                                    </div>
+                                }
+                            </td>
+                            <td class="text-white">@project.Baslik</td>
+                            <td class="text-secondary small">@project.Teknolojiler</td>
+                            <td>
+                                @if (project.AktifMi)
+                                {
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary">Pasif</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-info me-2" @onclick="() => ShowEditModal(project)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteProject(project.Id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (isModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-0">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-white">@(isEditing ? "Projeyi Düzenle" : "Yeni Proje Ekle")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="editingProject" OnValidSubmit="SaveProject">
+                        <DataAnnotationsValidator />
+                        
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">@errorMessage</div>
+                        }
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Başlık</label>
+                                <InputText @bind-Value="editingProject.Baslik" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Teknolojiler</label>
+                                <InputText @bind-Value="editingProject.Teknolojiler" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-white small">Açıklama</label>
+                                <InputTextArea @bind-Value="editingProject.Aciklama" class="form-control form-control-glass" rows="3" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Demo Linki</label>
+                                <InputText @bind-Value="editingProject.Link" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center mt-md-4">
+                                <div class="form-check form-switch mt-3">
+                                    <InputCheckbox @bind-Value="editingProject.AktifMi" class="form-check-input" id="aktifSwitch" style="cursor:pointer;" />
+                                    <label class="form-check-label text-white ms-2" for="aktifSwitch" style="cursor:pointer;">Proje Aktif</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-white small">Proje Resmi</label>
+                                <InputFile OnChange="HandleFileSelected" class="form-control form-control-glass" accept="image/*" />
+                                @if (isEditing && !string.IsNullOrEmpty(editingProject.Resim))
+                                {
+                                    <div class="mt-2 text-secondary small">
+                                        Mevcut Resim: <a href="https://localhost:7068/images/@editingProject.Resim" target="_blank" class="text-accent">@editingProject.Resim</a>
+                                        (Yeni bir resim seçilmezse mevcut resim korunur)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="modal-footer border-secondary border-opacity-25 mt-4 pb-0 pe-0">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="CloseModal">İptal</button>
+                            <button type="submit" class="btn btn-accent px-4" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Kaydediliyor...</span>
+                                }
+                                else
+                                {
+                                    <span>Kaydet</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .btn-accent {
+        background-color: #64ffda;
+        color: #0a192f;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-accent:hover {
+        background-color: #52e0c4;
+        transform: translateY(-2px);
+        color: #0a192f;
+    }
+    .table-glass {
+        background: rgba(16, 33, 62, 0.5) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .table-glass th, .table-glass td {
+        background-color: transparent !important;
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+</style>
+
+@code {
+    private List<ProjectDto> projects = new();
+    private bool isLoading = true;
+    private bool isModalOpen = false;
+    private bool isEditing = false;
+    private bool isSaving = false;
+    private string errorMessage = "";
+    
+    private ProjectDto editingProject = new();
+    private IBrowserFile? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProjects();
+    }
+
+    private async Task LoadProjects()
+    {
+        isLoading = true;
+        try
+        {
+            var response = await Http.GetFromJsonAsync<List<ProjectDto>>("api/Projects");
+            if (response != null)
+            {
+                projects = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Projeler yüklenirken hata oluştu: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ShowAddModal()
+    {
+        isEditing = false;
+        editingProject = new ProjectDto { AktifMi = true };
+        selectedFile = null;
+        errorMessage = "";
+        isModalOpen = true;
+    }
+
+    private void ShowEditModal(ProjectDto project)
+    {
+        isEditing = true;
+
+        editingProject = new ProjectDto
+        {
+            Id = project.Id,
+            Baslik = project.Baslik,
+            Aciklama = project.Aciklama,
+            Teknolojiler = project.Teknolojiler,
+            Link = project.Link,
+            AktifMi = project.AktifMi,
+            Resim = project.Resim
+        };
+        selectedFile = null;
+        errorMessage = "";
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task SaveProject()
+    {
+        isSaving = true;
+        errorMessage = "";
+
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(editingProject.Baslik ?? ""), "Baslik");
+            content.Add(new StringContent(editingProject.Teknolojiler ?? ""), "Teknolojiler");
+            content.Add(new StringContent(editingProject.Aciklama ?? ""), "Aciklama");
+            content.Add(new StringContent(editingProject.Link ?? ""), "Link");
+            content.Add(new StringContent(editingProject.AktifMi.ToString()), "AktifMi");
+            content.Add(new StringContent("1"), "UserId");
+
+            if (isEditing)
+            {
+                content.Add(new StringContent(editingProject.Id.ToString()), "Id");
+            }
+
+            if (selectedFile != null)
+            {
+                var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 5120000));
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+                content.Add(fileContent, "ResimFile", selectedFile.Name);
+            }
+            else if (!string.IsNullOrEmpty(editingProject.Resim))
+            {
+                content.Add(new StringContent(editingProject.Resim), "Resim");
+            }
+
+            HttpResponseMessage response;
+            if (isEditing)
+            {
+                response = await Http.PutAsync("api/Projects", content);
+            }
+            else
+            {
+                response = await Http.PostAsync("api/Projects", content);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadProjects();
+                CloseModal();
+            }
+            else
+            {
+                errorMessage = "Kaydetme başarısız oldu. Lütfen tüm alanları kontrol ediniz.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Hata oluştu: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteProject(int id)
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"api/Projects/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadProjects();
+            }
+            else
+            {
+                Console.WriteLine("Silme işlemi başarısız.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Silinirken hata oluştu: {ex.Message}");
+        }
+    }
+}
+

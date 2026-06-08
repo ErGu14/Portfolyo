@@ -1,0 +1,339 @@
+@page "/admin/certificates"
+@layout AdminLayout
+@inject HttpClient Http
+@using PortfolioFrontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-white fw-bold mb-0">Sertifikalar</h3>
+        <button class="btn btn-accent" @onclick="OpenAddModal">
+            <i class="fas fa-plus me-2"></i> Yeni Sertifika
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-accent" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else if (certificates == null || !certificates.Any())
+    {
+        <div class="glass-panel p-5 text-center">
+            <i class="fas fa-certificate fa-3x text-secondary mb-3"></i>
+            <h5 class="text-white">Henüz sertifika eklenmemiş.</h5>
+        </div>
+    }
+    else
+    {
+        <div class="glass-panel p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover table-dark mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Sertifika</th>
+                            <th>Başlık</th>
+                            <th>Kurum</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cert in certificates)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    @if (!string.IsNullOrEmpty(cert.Path))
+                                    {
+                                        <img src="@(string.IsNullOrEmpty(cert.Path) ? "" : (cert.Path.StartsWith("http") ? cert.Path : (!cert.Path.Contains(".") ? "https://images.unsplash.com/" + cert.Path + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (cert.Path.Contains("/") ? Http.BaseAddress + cert.Path.TrimStart('/') : Http.BaseAddress + "images/certificates/" + cert.Path))))" alt="Sertifika" class="img-thumbnail bg-transparent border-secondary" style="height: 60px; object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-secondary bg-opacity-25 rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                            <i class="fas fa-image text-secondary"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td><span class="fw-semibold text-white">@cert.Baslik</span></td>
+                                <td>@cert.Kurum</td>
+                                <td>@cert.AlmaTarihi.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    @if (cert.AktifMi)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">Pasif</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-info me-2" @onclick="() => OpenEditModal(cert)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteModal(cert)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-white fw-bold">@(editingCertificate.Id == 0 ? "Yeni Sertifika Ekle" : "Sertifika Düzenle")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <EditForm Model="editingCertificate" OnValidSubmit="SaveCertificate">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Başlık</label>
+                                <InputText @bind-Value="editingCertificate.Baslik" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Kurum</label>
+                                <InputText @bind-Value="editingCertificate.Kurum" class="form-control form-control-glass" />
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Alınma Tarihi</label>
+                                <InputDate @bind-Value="editingCertificate.AlmaTarihi" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Durum</label>
+                                <div class="form-check form-switch mt-2">
+                                    <InputCheckbox @bind-Value="editingCertificate.AktifMi" class="form-check-input custom-switch" id="aktifSwitch" />
+                                    <label class="form-check-label text-white ms-2" for="aktifSwitch">Sertifika Aktif Mi?</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label text-white small">Görsel Seç</label>
+                                <InputFile OnChange="HandleFileSelected" class="form-control form-control-glass" accept="image/*" />
+                                @if (!string.IsNullOrEmpty(editingCertificate.Path) && editingCertificate.Id != 0)
+                                {
+                                    <div class="mt-2">
+                                        <span class="text-secondary small">Mevcut Resim:</span><br />
+                                        <img src="@(string.IsNullOrEmpty(editingCertificate.Path) ? "" : (editingCertificate.Path.StartsWith("http") ? editingCertificate.Path : (!editingCertificate.Path.Contains(".") ? "https://images.unsplash.com/" + editingCertificate.Path + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (editingCertificate.Path.Contains("/") ? Http.BaseAddress + editingCertificate.Path.TrimStart('/') : Http.BaseAddress + "images/certificates/" + editingCertificate.Path))))" alt="Mevcut Resim" class="img-thumbnail bg-transparent border-secondary mt-1" style="height: 100px; object-fit: cover;" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mt-5 text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2" @onclick="CloseModal">İptal</button>
+                            <button type="submit" class="btn btn-accent" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Kaydediliyor...</span>
+                                }
+                                else
+                                {
+                                    <span>Kaydet</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isDeleteModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Silme Onayı</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-white fs-5">"<span class="text-accent">@certificateToDelete?.Baslik</span>" adlı sertifikayı silmek istediğinize emin misiniz?</p>
+                    <p class="text-secondary small">Bu işlem geri alınamaz.</p>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="CloseDeleteModal">İptal</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteCertificate" disabled="@isSaving">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<CertificateDto>? certificates;
+    private bool isLoading = true;
+    
+    private bool isModalOpen = false;
+    private bool isDeleteModalOpen = false;
+    private bool isSaving = false;
+    
+    private CertificateDto editingCertificate = new();
+    private CertificateDto? certificateToDelete;
+    private IBrowserFile? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCertificates();
+    }
+
+    private async Task LoadCertificates()
+    {
+        isLoading = true;
+        try
+        {
+            certificates = await Http.GetFromJsonAsync<List<CertificateDto>>("api/Certificates");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Sertifikalar yüklenirken hata: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        editingCertificate = new CertificateDto { AlmaTarihi = DateTime.Now, AktifMi = true };
+        selectedFile = null;
+        isModalOpen = true;
+    }
+
+    private void OpenEditModal(CertificateDto cert)
+    {
+        editingCertificate = new CertificateDto
+        {
+            Id = cert.Id,
+            Baslik = cert.Baslik,
+            Kurum = cert.Kurum,
+            Path = cert.Path,
+            AlmaTarihi = cert.AlmaTarihi,
+            AktifMi = cert.AktifMi,
+            UserId = cert.UserId
+        };
+        selectedFile = null;
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+    }
+
+    private void OpenDeleteModal(CertificateDto cert)
+    {
+        certificateToDelete = cert;
+        isDeleteModalOpen = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        isDeleteModalOpen = false;
+        certificateToDelete = null;
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task SaveCertificate()
+    {
+        isSaving = true;
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(editingCertificate.Id.ToString()), "Id");
+            content.Add(new StringContent(editingCertificate.Baslik ?? ""), "Baslik");
+            content.Add(new StringContent(editingCertificate.Kurum ?? ""), "Kurum");
+            content.Add(new StringContent(editingCertificate.AlmaTarihi.ToString("O")), "AlmaTarihi");
+            content.Add(new StringContent(editingCertificate.AktifMi.ToString()), "AktifMi");
+            content.Add(new StringContent("1"), "UserId");
+
+            if (selectedFile != null)
+            {
+                var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 10485760));
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+                content.Add(fileContent, "Dosya", selectedFile.Name);
+            }
+            else if (!string.IsNullOrEmpty(editingCertificate.Path))
+            {
+                 content.Add(new StringContent(editingCertificate.Path), "Path");
+            }
+
+            HttpResponseMessage response;
+            if (editingCertificate.Id == 0)
+            {
+                response = await Http.PostAsync("api/Certificates", content);
+            }
+            else
+            {
+                response = await Http.PutAsync("api/Certificates", content);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCertificates();
+                CloseModal();
+            }
+            else
+            {
+                Console.WriteLine("Sertifika kaydedilirken bir hata oluştu.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Kayıt hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteCertificate()
+    {
+        if (certificateToDelete == null) return;
+        
+        isSaving = true;
+        try
+        {
+            var response = await Http.DeleteAsync($"api/Certificates/{certificateToDelete.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadCertificates();
+                CloseDeleteModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Silme hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

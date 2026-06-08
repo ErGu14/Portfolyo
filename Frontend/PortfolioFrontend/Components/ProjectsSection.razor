@@ -1,0 +1,224 @@
+@using PortfolioFrontend.Models
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+
+<section id="projects-section" class="py-5">
+    <div class="container" style="padding-top: 80px;">
+        <div class="row reveal mb-5">
+            <div class="col-12">
+                <h2 class="section-title fw-bold">Geliştirdiğim Bazı Projeler</h2>
+            </div>
+        </div>
+
+        @if (Projects == null)
+        {
+            <div class="text-center text-accent">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+            </div>
+        }
+        else if (!Projects.Any())
+        {
+            <p class="text-light text-center">Henüz proje eklenmemiş.</p>
+        }
+        else
+        {
+            <div class="row g-5">
+                @for (int i = 0; i < Math.Min(Projects.Count, visibleCount); i++)
+                {
+                    var project = Projects[i];
+                    bool isLeftAligned = i % 2 == 0;
+
+                    <div class="col-lg-12 reveal mb-5">
+                        <div class="row align-items-center">
+                            @if (isLeftAligned)
+                            {
+
+                                <div class="col-lg-7 position-relative z-index-1">
+                                    <div class="project-img-wrapper rounded overflow-hidden shadow-lg border border-secondary border-opacity-25" style="height: 350px;">
+                                        <div class="img-overlay"></div>
+                                        <img src="@(string.IsNullOrEmpty(project.Resim) ? "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (project.Resim.StartsWith("http") ? project.Resim : (!project.Resim.Contains(".") ? "https://images.unsplash.com/" + project.Resim + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (project.Resim.Contains("/") ? Http.BaseAddress + project.Resim.TrimStart('/') : Http.BaseAddress + "images/projects/" + project.Resim))))" alt="@project.Baslik" class="w-100 h-100 object-fit-cover" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-5 text-lg-end mt-4 mt-lg-0 project-content" style="z-index: 2;">
+                                    <p class="text-accent font-monospace small mb-2">Öne Çıkan Proje</p>
+                                    <h3 class="text-white fw-bold mb-4">@project.Baslik</h3>
+                                    <div class="glass-panel p-4 mb-4 text-start text-lg-end shadow-lg" style="background: var(--bg-secondary);">
+                                        <p class="text-light m-0">@project.Aciklama</p>
+                                    </div>
+                                    <ul class="d-flex flex-wrap gap-3 list-unstyled justify-content-lg-end font-monospace text-light small mb-4">
+                                        @foreach (var tech in (project.Teknolojiler ?? "").Split(',').Select(t => t.Trim()))
+                                        {
+                                            if(!string.IsNullOrEmpty(tech)) { <li>@tech</li> }
+                                        }
+                                    </ul>
+                                    <div class="d-flex gap-3 justify-content-lg-end">
+                                        @if (!string.IsNullOrEmpty(project.Link))
+                                        {
+                                            <a href="@(string.IsNullOrEmpty(project.Link) ? "#" : (project.Link.StartsWith("http") ? project.Link : "https://" + project.Link))" target="_blank" class="text-white hover-accent fs-4"><i class="fas fa-external-link-alt"></i></a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div class="col-lg-5 order-2 order-lg-1 text-start mt-4 mt-lg-0 project-content" style="z-index: 2;">
+                                    <p class="text-accent font-monospace small mb-2">Öne Çıkan Proje</p>
+                                    <h3 class="text-white fw-bold mb-4">@project.Baslik</h3>
+                                    <div class="glass-panel p-4 mb-4 text-start shadow-lg" style="background: var(--bg-secondary);">
+                                        <p class="text-light m-0">@project.Aciklama</p>
+                                    </div>
+                                    <ul class="d-flex flex-wrap gap-3 list-unstyled text-light font-monospace small mb-4">
+                                        @foreach (var tech in (project.Teknolojiler ?? "").Split(',').Select(t => t.Trim()))
+                                        {
+                                            if(!string.IsNullOrEmpty(tech)) { <li>@tech</li> }
+                                        }
+                                    </ul>
+                                    <div class="d-flex gap-3">
+                                        @if (!string.IsNullOrEmpty(project.Link))
+                                        {
+                                            <a href="@(string.IsNullOrEmpty(project.Link) ? "#" : (project.Link.StartsWith("http") ? project.Link : "https://" + project.Link))" target="_blank" class="text-white hover-accent fs-4"><i class="fas fa-external-link-alt"></i></a>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-7 order-1 order-lg-2 position-relative z-index-1">
+                                    <div class="project-img-wrapper rounded overflow-hidden shadow-lg border border-secondary border-opacity-25" style="height: 350px;">
+                                        <div class="img-overlay"></div>
+                                        <img src="@(string.IsNullOrEmpty(project.Resim) ? "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (project.Resim.StartsWith("http") ? project.Resim : (!project.Resim.Contains(".") ? "https://images.unsplash.com/" + project.Resim + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (project.Resim.Contains("/") ? Http.BaseAddress + project.Resim.TrimStart('/') : Http.BaseAddress + "images/projects/" + project.Resim))))" alt="@project.Baslik" class="w-100 h-100 object-fit-cover" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (HasMore)
+            {
+                <div class="text-center mt-5">
+                    <button class="btn btn-premium" @onclick="LoadMore">Daha Fazla Proje Gör <i class="fas fa-chevron-down ms-2"></i></button>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+<style>
+    .project-img-wrapper {
+        position: relative;
+    }
+    
+    .img-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: var(--accent-glow-strong);
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+    
+    .project-img-wrapper:hover .img-overlay {
+        background: transparent;
+    }
+    
+    .hover-accent {
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .hover-accent:hover {
+        color: var(--accent-primary) !important;
+        transform: translateY(-3px);
+    }
+    
+    @@media (max-width: 991px) {
+        .project-content {
+            margin-top: -50px !important;
+        }
+        .project-content .glass-panel {
+            background: rgba(17, 34, 64, 0.95) !important;
+        }
+    }
+</style>
+
+@code {
+    private List<ProjectDto>? Projects;
+    private int visibleCount = 2; // Başlangıçta 2 proje göster
+    private bool HasMore => Projects != null && visibleCount < Projects.Count;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var apiProjects = await Http.GetFromJsonAsync<List<ProjectDto>>("api/Projects");
+            if (apiProjects != null && apiProjects.Any())
+            {
+
+                Projects = apiProjects.Where(p => p.AktifMi).OrderByDescending(p => p.EklemeTarihi).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Projeler çekilemedi: " + ex.Message);
+        }
+
+
+        if (Projects == null || !Projects.Any())
+        {
+            Projects = new List<ProjectDto>
+            {
+                new ProjectDto {
+                    Baslik = "Black Ajans Portalı",
+                    Aciklama = "TikTok ajans yönetimi için geliştirilen devasa ölçekli bir portal. Kompleks veritabanı şemalarının tasarımı, rol bazlı yetkilendirme altyapısı ve gelişmiş raporlama özellikleri ile ajansın tüm operasyonel yükünü hafifleten bir backend mimarisi kurgulandı.",
+                    Teknolojiler = "C#, .NET 8 API, MSSQL, Identity",
+                    Resim = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                },
+                new ProjectDto {
+                    Baslik = "Sanal Kabin (Virtual Try-On)",
+                    Aciklama = "Yapay zeka algoritmalarıyla çalışan yenilikçi kıyafet deneme uygulamasının backend servisleri. Fotoğraf işleme kuyrukları (RabbitMQ), mikroservis mimarisi ve yüksek trafikli anlık bildirim altyapısı kodlandı.",
+                    Teknolojiler = "Flutter, Python AI, RabbitMQ, .NET Core",
+                    Resim = "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                },
+                new ProjectDto {
+                    Baslik = "KumanStore",
+                    Aciklama = "Modern bir e-ticaret uygulamasının uçtan uca gelişimi. Sepet yönetimi, güvenli ödeme (Iyzico) entegrasyonu, sipariş takip durumu ve detaylı admin paneli ile baştan sona temiz kod (Clean Architecture) prensipleriyle yazıldı.",
+                    Teknolojiler = ".NET 8, Blazor WASM, Iyzico API, Clean Arch",
+                    Resim = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                    Link = "https://github.com/ErGu14/KumanStore"
+                }
+            };
+        }
+    }
+
+    private bool isRendered = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!isRendered && Projects != null && Projects.Any())
+        {
+            isRendered = true;
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("portfolio.initScrollObservers");
+            }
+            catch { /* Ignore */ }
+        }
+    }
+
+    private async Task LoadMore()
+    {
+        visibleCount += 2;
+        StateHasChanged();
+        
+
+        await Task.Delay(100); 
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("portfolio.initScrollObservers");
+        }
+        catch { /* Ignore */ }
+    }
+}
+
+

@@ -1,0 +1,32 @@
+@page "/"
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Eray Gülüçmen - Portfolyo</PageTitle>
+
+<PortfolioFrontend.Components.Navbar />
+
+<main>
+    <PortfolioFrontend.Components.HeroSection />
+    <PortfolioFrontend.Components.AboutSection />
+    <PortfolioFrontend.Components.SkillsSection />
+    <PortfolioFrontend.Components.ProjectsSection />
+    <PortfolioFrontend.Components.CertificatesSection />
+    <PortfolioFrontend.Components.ContactSection />
+</main>
+
+<PortfolioFrontend.Components.Footer />
+<PortfolioFrontend.Components.FloatingCvButton />
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try 
+            {
+                await JSRuntime.InvokeVoidAsync("portfolio.initScrollObservers");
+            }
+            catch { /* Hataları yoksay, UI'ı bozmasın */ }
+        }
+    }
+}

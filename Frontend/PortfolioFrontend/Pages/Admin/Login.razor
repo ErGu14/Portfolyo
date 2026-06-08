@@ -1,0 +1,159 @@
+@page "/admin"
+@layout PortfolioFrontend.Layout.AdminLayout
+@using PortfolioFrontend.Models
+@using PortfolioFrontend.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<PageTitle>Admin Panel Girişi</PageTitle>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-12 col-md-8 col-lg-5">
+        <div class="glass-panel p-5 shadow-lg position-relative overflow-hidden">
+
+            <div class="position-absolute rounded-circle" style="width: 200px; height: 200px; background: rgba(100, 255, 218, 0.1); top: -50px; right: -50px; filter: blur(40px);"></div>
+            <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; background: rgba(100, 255, 218, 0.05); bottom: -30px; left: -30px; filter: blur(30px);"></div>
+
+            <div class="text-center mb-5 position-relative z-1">
+                <i class="fas fa-lock text-accent mb-3" style="font-size: 2.5rem; color: #64ffda;"></i>
+                <h3 class="text-white fw-bold">Yönetim Paneli</h3>
+                <p class="text-secondary small">Devam etmek için giriş yapın</p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger border-0 position-relative z-1" style="background: rgba(220, 53, 69, 0.1); color: #ff6b6b; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-circle me-2"></i> @ErrorMessage
+                </div>
+            }
+
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="position-relative z-1">
+                <DataAnnotationsValidator />
+
+                <div class="mb-4">
+                    <label class="form-label text-white small mb-1">E-posta Adresi</label>
+                    <div class="input-group">
+                        <span class="input-group-text form-control-glass border-end-0">
+                            <i class="fas fa-envelope text-accent" style="color: #64ffda;"></i>
+                        </span>
+                        <InputText @bind-Value="loginModel.Email" class="form-control form-control-glass border-start-0 ps-3" placeholder="ornek@mail.com" />
+                    </div>
+                    <ValidationMessage For="@(() => loginModel.Email)" class="text-danger small mt-1 d-block" style="color: #ff6b6b !important;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-white small mb-1">Şifre</label>
+                    <div class="input-group">
+                        <span class="input-group-text form-control-glass border-end-0">
+                            <i class="fas fa-key text-accent" style="color: #64ffda;"></i>
+                        </span>
+                        @if (showPassword)
+                        {
+                            <InputText @bind-Value="loginModel.Password" type="text" class="form-control form-control-glass border-start-0 border-end-0 ps-3" placeholder="••••••••" style="transition: all 0.3s ease;" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="loginModel.Password" type="password" class="form-control form-control-glass border-start-0 border-end-0 ps-3" placeholder="••••••••" style="transition: all 0.3s ease;" />
+                        }
+                        <span class="input-group-text form-control-glass border-start-0" style="cursor: pointer;" @onclick="TogglePasswordVisibility">
+                            <i class="fas @(showPassword ? "fa-eye-slash" : "fa-eye") text-accent" style="color: #64ffda; transition: all 0.3s ease;"></i>
+                        </span>
+                    </div>
+                    <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small mt-1 d-block" style="color: #ff6b6b !important;" />
+                </div>
+
+                <div class="d-grid mt-5">
+                    <button type="submit" class="btn btn-accent py-2 fw-bold" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Giriş Yapılıyor...</span>
+                        }
+                        else
+                        {
+                            <span><i class="fas fa-sign-in-alt me-2"></i>Giriş Yap</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDto loginModel = new();
+    private string ErrorMessage = string.Empty;
+    private bool isLoading = false;
+    private bool showPassword = false;
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/admin/dashboard");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        ErrorMessage = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/Auth/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+                if (result != null && !string.IsNullOrEmpty(result.Token))
+                {
+                    await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", result.Token);
+                    ((CustomAuthStateProvider)AuthStateProvider).MarkUserAsAuthenticated(result.Token);
+                    
+
+                    NavigationManager.NavigateTo("/admin/dashboard");
+                }
+                else
+                {
+                    var tokenString = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(tokenString))
+                    {
+
+                        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", tokenString);
+                        ((CustomAuthStateProvider)AuthStateProvider).MarkUserAsAuthenticated(tokenString);
+                        NavigationManager.NavigateTo("/admin/dashboard");
+                    }
+                }
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                ErrorMessage = "E-posta adresiniz veya şifreniz hatalı.";
+            }
+            else
+            {
+                ErrorMessage = "Sunucuya bağlanırken bir hata oluştu.";
+            }
+        }
+        catch (Exception)
+        {
+            ErrorMessage = "Sunucu bağlantısı kurulamadı. Lütfen internet bağlantınızı kontrol edin.";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,62 @@
+@inherits LayoutComponentBase
+
+<div class="admin-layout" style="min-height: 100vh; background-color: #0a192f; display: flex; font-family: 'Inter', sans-serif;">
+    <AuthorizeView>
+        <Authorized>
+
+            <div class="d-none d-md-block h-100 position-fixed" style="width: 250px; z-index: 1000;">
+                <AdminSidebar />
+            </div>
+
+            <div class="flex-grow-1" style="margin-left: 250px;">
+                <div class="p-4 p-md-5 w-100">
+                    @Body
+                </div>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+
+            <div class="w-100 d-flex align-items-center justify-content-center">
+                @Body
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+<style>
+    .glass-panel {
+        background: rgba(17, 34, 64, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(100, 255, 218, 0.1);
+        border-radius: 15px;
+    }
+    
+    .form-control-glass {
+        background: rgba(2, 12, 27, 0.7) !important;
+        border: 1px solid rgba(100, 255, 218, 0.2) !important;
+        color: #ccd6f6 !important;
+    }
+
+    .form-control-glass::placeholder {
+        color: rgba(204, 214, 246, 0.6) !important;
+    }
+    
+    .form-control-glass:focus {
+        box-shadow: 0 0 0 0.25rem rgba(100, 255, 218, 0.25) !important;
+        border-color: #64ffda !important;
+    }
+
+    .btn-accent {
+        background-color: transparent;
+        color: #64ffda;
+        border: 1px solid #64ffda;
+        transition: all 0.3s ease;
+    }
+
+    .btn-accent:hover {
+        background-color: rgba(100, 255, 218, 0.1);
+        color: #64ffda;
+        transform: translateY(-2px);
+    }
+</style>

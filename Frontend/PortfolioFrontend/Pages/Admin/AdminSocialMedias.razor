@@ -1,0 +1,327 @@
+@page "/admin/social"
+@layout AdminLayout
+@inject HttpClient Http
+@using PortfolioFrontend.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-white fw-bold mb-0">Sosyal Medya Hesapları</h3>
+        <button class="btn btn-accent" @onclick="OpenAddModal">
+            <i class="fas fa-plus me-2"></i> Yeni Ekle
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-accent" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else if (socialMedias == null || !socialMedias.Any())
+    {
+        <div class="glass-panel p-5 text-center">
+            <i class="fas fa-share-alt fa-3x text-secondary mb-3"></i>
+            <h5 class="text-white">Henüz sosyal medya hesabı eklenmemiş.</h5>
+        </div>
+    }
+    else
+    {
+        <div class="glass-panel p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover table-dark mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">İkon</th>
+                            <th>Platform Adı</th>
+                            <th>Bağlantı Linki</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sm in socialMedias)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    @if (!string.IsNullOrEmpty(sm.IconPath))
+                                    {
+                                        if (sm.IconPath.StartsWith("fa-") || sm.IconPath.StartsWith("fab ") || sm.IconPath.StartsWith("fas ") || sm.IconPath.StartsWith("far "))
+                                        {
+                                            <i class="@sm.IconPath text-light" style="font-size: 2rem;"></i>
+                                        }
+                                        else
+                                        {
+                                            <img src="@(sm.IconPath.StartsWith("http") ? sm.IconPath : (!sm.IconPath.Contains(".") ? "https://images.unsplash.com/" + sm.IconPath + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (sm.IconPath.Contains("/") ? Http.BaseAddress + sm.IconPath.TrimStart('/') : Http.BaseAddress + "images/social/" + sm.IconPath)))" alt="İkon" class="img-thumbnail bg-transparent border-secondary" style="height: 40px; width: 40px; object-fit: cover;" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-secondary bg-opacity-25 rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-link text-secondary"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td><span class="fw-semibold text-white">@sm.PlatformAd</span></td>
+                                <td><a href="@(string.IsNullOrEmpty(sm.Link) ? "#" : (sm.Link.StartsWith("http") ? sm.Link : "https://" + sm.Link))" target="_blank" class="text-accent text-decoration-none">@sm.Link</a></td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-info me-2" @onclick="() => OpenEditModal(sm)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteModal(sm)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-white fw-bold">@(editingSocial.Id == 0 ? "Yeni Sosyal Medya Ekle" : "Sosyal Medya Düzenle")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <EditForm Model="editingSocial" OnValidSubmit="SaveSocialMedia">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Platform Adı (Örn: LinkedIn)</label>
+                                <InputText @bind-Value="editingSocial.PlatformAd" class="form-control form-control-glass" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small">Profil Linki</label>
+                                <InputText @bind-Value="editingSocial.Link" class="form-control form-control-glass" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label text-white small">İkon (FontAwesome Class)</label>
+                                <InputText @bind-Value="editingSocial.IconPath" class="form-control form-control-glass" placeholder="Örn: fab fa-instagram" />
+                                <small class="text-secondary mt-1 d-block">Örnek: fab fa-instagram, fab fa-tiktok, fas fa-envelope. İkonları <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" class="text-accent text-decoration-underline">FontAwesome</a> üzerinden bulabilirsiniz.</small>
+                                @if (!string.IsNullOrEmpty(editingSocial.IconPath) && editingSocial.Id != 0)
+                                {
+                                    <div class="mt-2">
+                                        <span class="text-secondary small">Mevcut İkon:</span><br />
+                                        @if (editingSocial.IconPath.StartsWith("fa-") || editingSocial.IconPath.StartsWith("fab ") || editingSocial.IconPath.StartsWith("fas ") || editingSocial.IconPath.StartsWith("far "))
+                                        {
+                                            <i class="@editingSocial.IconPath text-light mt-1" style="font-size: 2.5rem;"></i>
+                                        }
+                                        else
+                                        {
+                                            <img src="@(editingSocial.IconPath.StartsWith("http") ? editingSocial.IconPath : (!editingSocial.IconPath.Contains(".") ? "https://images.unsplash.com/" + editingSocial.IconPath + "?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" : (editingSocial.IconPath.Contains("/") ? Http.BaseAddress + editingSocial.IconPath.TrimStart('/') : Http.BaseAddress + "images/social/" + editingSocial.IconPath)))" alt="Mevcut İkon" class="img-thumbnail bg-transparent border-secondary mt-1" style="height: 60px; object-fit: cover;" />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mt-5 text-end">
+                            <button type="button" class="btn btn-outline-secondary me-2" @onclick="CloseModal">İptal</button>
+                            <button type="submit" class="btn btn-accent" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Kaydediliyor...</span>
+                                }
+                                else
+                                {
+                                    <span>Kaydet</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isDeleteModalOpen)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(10, 25, 47, 0.9);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-secondary">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Silme Onayı</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseDeleteModal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-white fs-5">"<span class="text-accent">@socialToDelete?.PlatformAd</span>" platformunu silmek istediğinize emin misiniz?</p>
+                    <p class="text-secondary small">Bu işlem geri alınamaz.</p>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="CloseDeleteModal">İptal</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteSocialMedia" disabled="@isSaving">Evet, Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<SocialMediaDto>? socialMedias;
+    private bool isLoading = true;
+    
+    private bool isModalOpen = false;
+    private bool isDeleteModalOpen = false;
+    private bool isSaving = false;
+    
+    private SocialMediaDto editingSocial = new();
+    private SocialMediaDto? socialToDelete;
+    private IBrowserFile? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSocialMedias();
+    }
+
+    private async Task LoadSocialMedias()
+    {
+        isLoading = true;
+        try
+        {
+            socialMedias = await Http.GetFromJsonAsync<List<SocialMediaDto>>("api/SocialMedias");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Sosyal medya yüklenirken hata: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        editingSocial = new SocialMediaDto();
+        selectedFile = null;
+        isModalOpen = true;
+    }
+
+    private void OpenEditModal(SocialMediaDto sm)
+    {
+        editingSocial = new SocialMediaDto
+        {
+            Id = sm.Id,
+            PlatformAd = sm.PlatformAd,
+            Link = sm.Link,
+            IconPath = sm.IconPath,
+            UserId = sm.UserId
+        };
+        selectedFile = null;
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+    }
+
+    private void OpenDeleteModal(SocialMediaDto sm)
+    {
+        socialToDelete = sm;
+        isDeleteModalOpen = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        isDeleteModalOpen = false;
+        socialToDelete = null;
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task SaveSocialMedia()
+    {
+        isSaving = true;
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(editingSocial.Id.ToString()), "Id");
+            content.Add(new StringContent(editingSocial.PlatformAd ?? ""), "PlatformAd");
+            content.Add(new StringContent(editingSocial.Link ?? ""), "Link");
+            content.Add(new StringContent("1"), "UserId");
+
+            if (selectedFile != null)
+            {
+                var fileContent = new StreamContent(selectedFile.OpenReadStream(maxAllowedSize: 5242880)); // 5MB Limit
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+                content.Add(fileContent, "IconFile", selectedFile.Name);
+            }
+            else if (!string.IsNullOrEmpty(editingSocial.IconPath))
+            {
+                 content.Add(new StringContent(editingSocial.IconPath), "IconPath");
+            }
+
+            HttpResponseMessage response;
+            if (editingSocial.Id == 0)
+            {
+                response = await Http.PostAsync("api/SocialMedias", content);
+            }
+            else
+            {
+                response = await Http.PutAsync("api/SocialMedias", content);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadSocialMedias();
+                CloseModal();
+            }
+            else
+            {
+                Console.WriteLine("Sosyal medya kaydedilirken bir hata oluştu.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Kayıt hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteSocialMedia()
+    {
+        if (socialToDelete == null) return;
+        
+        isSaving = true;
+        try
+        {
+            var response = await Http.DeleteAsync($"api/SocialMedias/{socialToDelete.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadSocialMedias();
+                CloseDeleteModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Silme hatası: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}
+
+

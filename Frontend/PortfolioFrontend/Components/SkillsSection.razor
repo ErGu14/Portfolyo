@@ -1,0 +1,73 @@
+@using PortfolioFrontend.Models
+@inject HttpClient Http
+
+<section id="skills-section" class="py-5">
+    <div class="container" style="padding-top: 80px;">
+        <div class="row reveal">
+            <div class="col-12 mb-5">
+                <h2 class="section-title fw-bold">Teknik Yetenekler</h2>
+            </div>
+            
+            @if (Skills == null || !Skills.Any())
+            {
+                <div class="col-12">
+                    <p class="text-light">Yetenekler yükleniyor...</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var skill in Skills.Where(s => s.IsActive))
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="glass-panel p-4 h-100 skill-card">
+                            <div class="d-flex align-items-center mb-4">
+                                <i class="@skill.IconPath text-accent fs-2 me-3"></i>
+                                <h4 class="text-white m-0">@skill.Title</h4>
+                            </div>
+                            <ul class="text-light p-0" style="list-style: none; line-height: 2;">
+                                @if (!string.IsNullOrWhiteSpace(skill.Items))
+                                {
+                                    var items = skill.Items.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                                    foreach (var item in items)
+                                    {
+                                        <li><span class="text-accent me-2">▹</span> @item</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .skill-card {
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .skill-card:hover {
+        transform: translateY(-10px);
+        background: rgba(17, 34, 64, 0.9);
+    }
+</style>
+
+@code {
+    private List<SkillDto> Skills = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var data = await Http.GetFromJsonAsync<List<SkillDto>>("api/Skills");
+            if (data != null)
+            {
+                Skills = data;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching skills: {ex.Message}");
+        }
+    }
+}

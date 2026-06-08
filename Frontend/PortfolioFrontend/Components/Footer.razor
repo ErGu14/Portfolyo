@@ -1,0 +1,54 @@
+@using PortfolioFrontend.Models
+@inject HttpClient Http
+
+<footer class="py-4 mt-5 border-top border-secondary border-opacity-25 bg-black bg-opacity-25">
+    <div class="container text-center">
+        <div class="d-flex justify-content-center gap-4 mb-3">
+            @if (SocialMedias != null && SocialMedias.Any())
+            {
+                @foreach (var sm in SocialMedias)
+                {
+                    <a href="@(string.IsNullOrEmpty(sm.Link) ? "#" : (sm.Link.StartsWith("http") ? sm.Link : "https://" + sm.Link))" target="_blank" class="text-light hover-primary fs-4" title="@sm.PlatformAd"><i class="@sm.IconPath"></i></a>
+                }
+            }
+        </div>
+        <p class="text-light small m-0">&copy; @DateTime.Now.Year Eray Gülüçmen. Tüm haklarý saklýdýr.</p>
+    </div>
+</footer>
+
+<style>
+    .hover-primary {
+        transition: color 0.3s ease;
+    }
+    
+    .hover-primary:hover {
+        color: var(--accent-blue) !important;
+    }
+</style>
+
+@code {
+    private List<SocialMediaDto>? SocialMedias;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            SocialMedias = await Http.GetFromJsonAsync<List<SocialMediaDto>>("api/SocialMedias");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Sosyal medyalar çekilemedi: " + ex.Message);
+        }
+
+        if (SocialMedias == null || !SocialMedias.Any())
+        {
+            SocialMedias = new List<SocialMediaDto>
+            {
+                new SocialMediaDto { PlatformAd = "GitHub", Link = "https://github.com/ErGu14", IconPath = "fab fa-github" },
+                new SocialMediaDto { PlatformAd = "LinkedIn", Link = "https://linkedin.com/in/eray-gulucmen-704b0a32a", IconPath = "fab fa-linkedin" },
+                new SocialMediaDto { PlatformAd = "Bionluk", Link = "https://bionluk.com/kumanstack", IconPath = "fas fa-briefcase" }
+            };
+        }
+    }
+}
+
