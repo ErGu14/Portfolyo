@@ -139,7 +139,7 @@ cd Frontend/PortfolioFrontend
 dotnet run
 ```
 
-Artık tarayıcınızdan `http://localhost:5296` (veya belirtilen port) adresine giderek siteyi görebilir, `/login` sayfasına giderek veritabanında oluşturulan varsayılan yetkili bilgileriyle admin paneline girebilirsiniz.
+Artık tarayıcınızdan `http://localhost:5296` (veya belirtilen port) adresine giderek siteyi görebilir, `/admin` sayfasına giderek veritabanında oluşturulan varsayılan yetkili bilgileriyle admin paneline girebilirsiniz.
 
 > [!IMPORTANT]
 > **Admin Giriş Bilgileri (Öğretmen Değerlendirmesi İçin)**
