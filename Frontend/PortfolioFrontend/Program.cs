@@ -12,7 +12,7 @@ builder.Services.AddScoped<CustomHttpHandler>();
 
 builder.Services.AddHttpClient("PortfolioBackend", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7068/");
+    client.BaseAddress = new Uri("https://portfolyo-2fuo.onrender.com/");
 }).AddHttpMessageHandler<CustomHttpHandler>();
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("PortfolioBackend"));
