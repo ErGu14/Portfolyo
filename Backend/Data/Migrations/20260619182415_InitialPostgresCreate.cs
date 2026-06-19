@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialPostgresCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,10 +18,10 @@ namespace Data.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,22 +32,22 @@ namespace Data.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AdSoyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    AdSoyad = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,12 +58,12 @@ namespace Data.Migrations
                 name: "Features",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IconPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    IconPath = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,14 +74,14 @@ namespace Data.Migrations
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AdSoyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Konu = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Mesaj = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OkunduMu = table.Column<bool>(type: "bit", nullable: false),
-                    GondermeTarihi = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AdSoyad = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Konu = table.Column<string>(type: "text", nullable: false),
+                    Mesaj = table.Column<string>(type: "text", nullable: false),
+                    OkunduMu = table.Column<bool>(type: "boolean", nullable: false),
+                    GondermeTarihi = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -91,10 +92,10 @@ namespace Data.Migrations
                 name: "RecentTechnologies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -105,12 +106,12 @@ namespace Data.Migrations
                 name: "Skills",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IconPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Items = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    IconPath = table.Column<string>(type: "text", nullable: false),
+                    Items = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -121,11 +122,11 @@ namespace Data.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -142,11 +143,11 @@ namespace Data.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -163,10 +164,10 @@ namespace Data.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -183,8 +184,8 @@ namespace Data.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -207,10 +208,10 @@ namespace Data.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -227,14 +228,14 @@ namespace Data.Migrations
                 name: "Certificates",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Baslik = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Kurum = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AlmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AktifMi = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Baslik = table.Column<string>(type: "text", nullable: false),
+                    Kurum = table.Column<string>(type: "text", nullable: false),
+                    Path = table.Column<string>(type: "text", nullable: false),
+                    AlmaTarihi = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    AktifMi = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -251,16 +252,16 @@ namespace Data.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Baslik = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Teknolojiler = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Resim = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EklemeTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AktifMi = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Baslik = table.Column<string>(type: "text", nullable: false),
+                    Aciklama = table.Column<string>(type: "text", nullable: true),
+                    Teknolojiler = table.Column<string>(type: "text", nullable: false),
+                    Resim = table.Column<string>(type: "text", nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true),
+                    EklemeTarihi = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    AktifMi = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -277,14 +278,14 @@ namespace Data.Migrations
                 name: "SiteSettings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AdSoyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Unvan = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Hakkimda = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CvPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProfilFoto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AdSoyad = table.Column<string>(type: "text", nullable: false),
+                    Unvan = table.Column<string>(type: "text", nullable: false),
+                    Hakkimda = table.Column<string>(type: "text", nullable: false),
+                    CvPath = table.Column<string>(type: "text", nullable: false),
+                    ProfilFoto = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -301,12 +302,12 @@ namespace Data.Migrations
                 name: "SocialMedias",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PlatformAd = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IconPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PlatformAd = table.Column<string>(type: "text", nullable: false),
+                    Link = table.Column<string>(type: "text", nullable: false),
+                    IconPath = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -327,7 +328,7 @@ namespace Data.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "AdSoyad", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "1", 0, "Eray Gülüçmen", "54bf1b21-454c-4399-b5c8-013cb40f22c6", "eray@mail.com", true, false, null, "ERAY@MAIL.COM", "ERAY@MAIL.COM", "AQAAAAIAAYagAAAAEB8aGjlUDnyaqOrLLP2+GKXahauPLkH4+c9v+0Klz0ywa+NB1o0z9BiRl9aMR19YPA==", null, false, "78df974d-498d-4bc6-89f0-e4272d4c70db", false, "eray@mail.com" });
+                values: new object[] { "1", 0, "Eray Gülüçmen", "d354e5e5-865f-4f42-b6b0-f1d3f1a8839e", "eray@mail.com", true, false, null, "ERAY@MAIL.COM", "ERAY@MAIL.COM", "AQAAAAIAAYagAAAAEM/z9aGPJEuG4CK/WRfdsD4QrrG+69XyiJjGFKXELWvOAnFUEAvgJv+IqKZycyRwjQ==", null, false, "7d99ecd6-9c3d-413d-93e6-2cfd5d1e6435", false, "eray@mail.com" });
 
             migrationBuilder.InsertData(
                 table: "Features",
@@ -337,7 +338,7 @@ namespace Data.Migrations
             migrationBuilder.InsertData(
                 table: "Messages",
                 columns: new[] { "Id", "AdSoyad", "Email", "GondermeTarihi", "Konu", "Mesaj", "OkunduMu" },
-                values: new object[] { 1, "Hoca / Danışman", "hoca@universite.edu.tr", new DateTime(2026, 6, 8, 16, 9, 32, 172, DateTimeKind.Local).AddTicks(6450), "Proje Değerlendirmesi", "Eray, projelerindeki mimari yaklaşımın ve temiz kod prensiplerine uyumun gerçekten çok başarılı. Portfolyon harika görünüyor, başarılarının devamını dilerim.", false });
+                values: new object[] { 1, "Hoca / Danışman", "hoca@universite.edu.tr", new DateTime(2026, 6, 19, 21, 24, 15, 212, DateTimeKind.Local).AddTicks(468), "Proje Değerlendirmesi", "Eray, projelerindeki mimari yaklaşımın ve temiz kod prensiplerine uyumun gerçekten çok başarılı. Portfolyon harika görünüyor, başarılarının devamını dilerim.", false });
 
             migrationBuilder.InsertData(
                 table: "RecentTechnologies",
@@ -384,10 +385,10 @@ namespace Data.Migrations
                 columns: new[] { "Id", "Aciklama", "AktifMi", "Baslik", "EklemeTarihi", "Link", "Resim", "Teknolojiler", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "TikTok ajans yönetimi için geliştirilen devasa ölçekli bir portal. Kompleks veritabanı şemalarının tasarımı, rol bazlı yetkilendirme altyapısı ve gelişmiş raporlama özellikleri ile ajansın tüm operasyonel yükünü hafifleten bir backend mimarisi kurgulandı.", true, "Black Ajans Yönetim Portalı", new DateTime(2026, 6, 8, 16, 9, 32, 172, DateTimeKind.Local).AddTicks(5496), "", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", "C#, .NET 8 API, MSSQL, Identity", "1" },
-                    { 2, "Yapay zeka algoritmalarıyla çalışan yenilikçi kıyafet deneme uygulamasının backend servisleri. Fotoğraf işleme kuyrukları (RabbitMQ), mikroservis mimarisi ve yüksek trafikli anlık bildirim altyapısı kodlandı.", true, "Sanal Kabin (Virtual Try-On)", new DateTime(2026, 6, 8, 16, 9, 32, 172, DateTimeKind.Local).AddTicks(5528), "", "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", "Flutter, Python AI, RabbitMQ, .NET Core", "1" },
-                    { 3, "Modern bir e-ticaret uygulamasının uçtan uca gelişimi. Sepet yönetimi, güvenli ödeme (Iyzico) entegrasyonu, sipariş takip durumu ve detaylı admin paneli ile baştan sona temiz kod (Clean Architecture) prensipleriyle yazıldı.", true, "KumanStore", new DateTime(2026, 6, 8, 16, 9, 32, 172, DateTimeKind.Local).AddTicks(5532), "https://github.com/ErGu14/KumanStore", "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", ".NET 8, Blazor WASM, Iyzico API, Clean Arch", "1" },
-                    { 4, "Güvenli ve hızlı e-ödeme altyapısı sistemi. REST API üzerinden bakiye yönetimi, işlem geçmişi ve sanal POS simülasyonu özellikleri barındırır.", true, "KumanPay", new DateTime(2026, 6, 8, 16, 9, 32, 172, DateTimeKind.Local).AddTicks(5536), "https://github.com/ErGu14/KumanPay", "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", ".NET 8, Web API, MSSQL", "1" }
+                    { 1, "TikTok ajans yönetimi için geliştirilen devasa ölçekli bir portal. Kompleks veritabanı şemalarının tasarımı, rol bazlı yetkilendirme altyapısı ve gelişmiş raporlama özellikleri ile ajansın tüm operasyonel yükünü hafifleten bir backend mimarisi kurgulandı.", true, "Black Ajans Yönetim Portalı", new DateTime(2026, 6, 19, 21, 24, 15, 212, DateTimeKind.Local).AddTicks(281), "", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", "C#, .NET 8 API, MSSQL, Identity", "1" },
+                    { 2, "Yapay zeka algoritmalarıyla çalışan yenilikçi kıyafet deneme uygulamasının backend servisleri. Fotoğraf işleme kuyrukları (RabbitMQ), mikroservis mimarisi ve yüksek trafikli anlık bildirim altyapısı kodlandı.", true, "Sanal Kabin (Virtual Try-On)", new DateTime(2026, 6, 19, 21, 24, 15, 212, DateTimeKind.Local).AddTicks(305), "", "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", "Flutter, Python AI, RabbitMQ, .NET Core", "1" },
+                    { 3, "Modern bir e-ticaret uygulamasının uçtan uca gelişimi. Sepet yönetimi, güvenli ödeme (Iyzico) entegrasyonu, sipariş takip durumu ve detaylı admin paneli ile baştan sona temiz kod (Clean Architecture) prensipleriyle yazıldı.", true, "KumanStore", new DateTime(2026, 6, 19, 21, 24, 15, 212, DateTimeKind.Local).AddTicks(307), "https://github.com/ErGu14/KumanStore", "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", ".NET 8, Blazor WASM, Iyzico API, Clean Arch", "1" },
+                    { 4, "Güvenli ve hızlı e-ödeme altyapısı sistemi. REST API üzerinden bakiye yönetimi, işlem geçmişi ve sanal POS simülasyonu özellikleri barındırır.", true, "KumanPay", new DateTime(2026, 6, 19, 21, 24, 15, 212, DateTimeKind.Local).AddTicks(309), "https://github.com/ErGu14/KumanPay", "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", ".NET 8, Web API, MSSQL", "1" }
                 });
 
             migrationBuilder.InsertData(
@@ -416,8 +417,7 @@ namespace Data.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -443,8 +443,7 @@ namespace Data.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Certificates_UserId",
