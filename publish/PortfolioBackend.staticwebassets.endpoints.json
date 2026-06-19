@@ -1,0 +1,580 @@
+{
+  "Version": 1,
+  "ManifestType": "Publish",
+  "Endpoints": [
+    {
+      "Route": "cv/Eray_Gulucmen_CV_TR.hitthqtew0.pdf",
+      "AssetFile": "cv/Eray_Gulucmen_CV_TR.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "93516"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"qePpghDgF+xkB88jnWOjfcFebqItfqmZws2RpPZ//7I=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 08 Jun 2026 13:25:24 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "hitthqtew0"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-qePpghDgF+xkB88jnWOjfcFebqItfqmZws2RpPZ//7I="
+        },
+        {
+          "Name": "label",
+          "Value": "cv/Eray_Gulucmen_CV_TR.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "cv/Eray_Gulucmen_CV_TR.pdf",
+      "AssetFile": "cv/Eray_Gulucmen_CV_TR.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "93516"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"qePpghDgF+xkB88jnWOjfcFebqItfqmZws2RpPZ//7I=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 08 Jun 2026 13:25:24 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-qePpghDgF+xkB88jnWOjfcFebqItfqmZws2RpPZ//7I="
+        }
+      ]
+    },
+    {
+      "Route": "images/InfotechAcademy_ReactJSFrontEnd_2025.jpg",
+      "AssetFile": "images/InfotechAcademy_ReactJSFrontEnd_2025.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3161988"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"OlaaRD1PSlDPuRU/vVXjBC8RnNwFxVkd9IwJ77xGNP0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 11 May 2025 09:29:52 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-OlaaRD1PSlDPuRU/vVXjBC8RnNwFxVkd9IwJ77xGNP0="
+        }
+      ]
+    },
+    {
+      "Route": "images/InfotechAcademy_ReactJSFrontEnd_2025.yl7htb6fto.jpg",
+      "AssetFile": "images/InfotechAcademy_ReactJSFrontEnd_2025.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3161988"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"OlaaRD1PSlDPuRU/vVXjBC8RnNwFxVkd9IwJ77xGNP0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 11 May 2025 09:29:52 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "yl7htb6fto"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-OlaaRD1PSlDPuRU/vVXjBC8RnNwFxVkd9IwJ77xGNP0="
+        },
+        {
+          "Name": "label",
+          "Value": "images/InfotechAcademy_ReactJSFrontEnd_2025.jpg"
+        }
+      ]
+    },
+    {
+      "Route": "images/InfotechAcademy_YazilimUzmanligiMSCD_2025.8y3rwpakbs.jpg",
+      "AssetFile": "images/InfotechAcademy_YazilimUzmanligiMSCD_2025.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "223083"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QO8PMkudXM/Y+6I9ASAmPk4SGz/OMY09at6E6hDfNbQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 05 Mar 2025 14:02:26 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8y3rwpakbs"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-QO8PMkudXM/Y+6I9ASAmPk4SGz/OMY09at6E6hDfNbQ="
+        },
+        {
+          "Name": "label",
+          "Value": "images/InfotechAcademy_YazilimUzmanligiMSCD_2025.jpg"
+        }
+      ]
+    },
+    {
+      "Route": "images/InfotechAcademy_YazilimUzmanligiMSCD_2025.jpg",
+      "AssetFile": "images/InfotechAcademy_YazilimUzmanligiMSCD_2025.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "223083"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QO8PMkudXM/Y+6I9ASAmPk4SGz/OMY09at6E6hDfNbQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 05 Mar 2025 14:02:26 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-QO8PMkudXM/Y+6I9ASAmPk4SGz/OMY09at6E6hDfNbQ="
+        }
+      ]
+    },
+    {
+      "Route": "images/foto.jbv1650ztg.jpg",
+      "AssetFile": "images/foto.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "108837"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"zw6wlQqACCZFY72nrTIezwb1aB+v+aqpybvN/cdyGr0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 May 2026 18:21:06 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "jbv1650ztg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-zw6wlQqACCZFY72nrTIezwb1aB+v+aqpybvN/cdyGr0="
+        },
+        {
+          "Name": "label",
+          "Value": "images/foto.jpg"
+        }
+      ]
+    },
+    {
+      "Route": "images/foto.jpg",
+      "AssetFile": "images/foto.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "108837"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"zw6wlQqACCZFY72nrTIezwb1aB+v+aqpybvN/cdyGr0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 May 2026 18:21:06 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-zw6wlQqACCZFY72nrTIezwb1aB+v+aqpybvN/cdyGr0="
+        }
+      ]
+    },
+    {
+      "Route": "pdfs/InfotechAcademy_InternationalSoftwareExpertise_2025.dz7y1mw057.pdf",
+      "AssetFile": "pdfs/InfotechAcademy_InternationalSoftwareExpertise_2025.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "637089"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"F+pwdu2FbHDkn4rb5ibcnhpb2D9kCvfyHm6QE/PzpcM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 07 Jun 2026 22:27:16 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "dz7y1mw057"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-F+pwdu2FbHDkn4rb5ibcnhpb2D9kCvfyHm6QE/PzpcM="
+        },
+        {
+          "Name": "label",
+          "Value": "pdfs/InfotechAcademy_InternationalSoftwareExpertise_2025.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "pdfs/InfotechAcademy_InternationalSoftwareExpertise_2025.pdf",
+      "AssetFile": "pdfs/InfotechAcademy_InternationalSoftwareExpertise_2025.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "637089"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"F+pwdu2FbHDkn4rb5ibcnhpb2D9kCvfyHm6QE/PzpcM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 07 Jun 2026 22:27:16 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-F+pwdu2FbHDkn4rb5ibcnhpb2D9kCvfyHm6QE/PzpcM="
+        }
+      ]
+    },
+    {
+      "Route": "pdfs/InfotechAcademy_YazilimUzmanligiMSCD_2025.i0h20shk0i.pdf",
+      "AssetFile": "pdfs/InfotechAcademy_YazilimUzmanligiMSCD_2025.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2566087"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"osJAzQjcpI1XD8A5TpS3hCAyWk9MWu9iYttCqgRSkks=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Jun 2025 10:55:36 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "i0h20shk0i"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-osJAzQjcpI1XD8A5TpS3hCAyWk9MWu9iYttCqgRSkks="
+        },
+        {
+          "Name": "label",
+          "Value": "pdfs/InfotechAcademy_YazilimUzmanligiMSCD_2025.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "pdfs/InfotechAcademy_YazilimUzmanligiMSCD_2025.pdf",
+      "AssetFile": "pdfs/InfotechAcademy_YazilimUzmanligiMSCD_2025.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2566087"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"osJAzQjcpI1XD8A5TpS3hCAyWk9MWu9iYttCqgRSkks=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Jun 2025 10:55:36 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-osJAzQjcpI1XD8A5TpS3hCAyWk9MWu9iYttCqgRSkks="
+        }
+      ]
+    },
+    {
+      "Route": "pdfs/MudanyaUniversitesi_YazilimUzmanligi_2025.6zd8itm7uy.pdf",
+      "AssetFile": "pdfs/MudanyaUniversitesi_YazilimUzmanligi_2025.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "787571"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wv5shvowQm57VJ48rDVPkgjNZ5Dt9jy8YFeZam54074=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 07 Jun 2026 22:27:50 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "6zd8itm7uy"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wv5shvowQm57VJ48rDVPkgjNZ5Dt9jy8YFeZam54074="
+        },
+        {
+          "Name": "label",
+          "Value": "pdfs/MudanyaUniversitesi_YazilimUzmanligi_2025.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "pdfs/MudanyaUniversitesi_YazilimUzmanligi_2025.pdf",
+      "AssetFile": "pdfs/MudanyaUniversitesi_YazilimUzmanligi_2025.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "787571"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wv5shvowQm57VJ48rDVPkgjNZ5Dt9jy8YFeZam54074=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 07 Jun 2026 22:27:50 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wv5shvowQm57VJ48rDVPkgjNZ5Dt9jy8YFeZam54074="
+        }
+      ]
+    }
+  ]
+}
